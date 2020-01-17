@@ -7,6 +7,9 @@
 // Author: Phil Howard 
 // phil.howard@oit.edu
 //
+// Edited by: Noah Shorter
+// noah.shorter@oit.edu
+//
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -31,7 +34,7 @@ int main(int argc, char **argv)
     int result = 0;
     int token;
 
-    std::cout << "Philip Howard" << std::endl;
+    std::cout << "Noah Shorter" << std::endl;
 
     if (argc > 1)
     {

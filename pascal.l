@@ -15,11 +15,13 @@
 #include "tokens.h"
 #include "cSymbolTable.h"
 #include "lex.h"
+#include <string.h>
 
     // comment out the other line to generate debug info
 #define DO_RETURN(a) return (a)
 //#define DO_RETURN(a) return Return(a)
 int Return(int val);
+char * tooLower(char * str);
 extern cSymbolTable g_symbolTable;
 yylval_t yylval;
 %}
@@ -95,7 +97,11 @@ WRITE                   DO_RETURN(WRITE);
 "real"                  DO_RETURN(REAL);
 "char"                  DO_RETURN(CHAR);
 
-{IDENTIFIERS}           {   yylval.symbol = g_symbolTable.insert(yytext);
+{IDENTIFIERS}           {   
+                            if(g_symbolTable.lookup(tooLower(yytext)) == NULL)
+                                yylval.symbol = g_symbolTable.insert(tooLower(yytext));
+                            else
+                                yylval.symbol = g_symbolTable.lookup(tooLower(yytext));
                             return IDENTIFIER;
                             //DO_RETURN(IDENTIFIER);
                         }
@@ -110,4 +116,19 @@ int Return(int val)
     printf("Scanned '%s': %d\n", yytext, val);
     return val;
 }
+
+char * tooLower(char * str)
+{
+    if(str != NULL)
+    {
+        for(int i = 0; i < strlen(str); ++i)
+        {
+            str[i] = tolower(str[i]);
+        }
+    }
+    return str;
+}
+
+
+
 

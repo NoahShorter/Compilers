@@ -29,16 +29,27 @@ class cSymbolTable
             SymbolTable.back().insert({str, newSym});
             return newSym;
         }
+        cSymbol * globalLookup(string str)
+        {
+            for (auto rit=SymbolTable.rbegin(); rit!=SymbolTable.rend(); ++rit)
+            {
+                unordered_map<string,cSymbol *>::const_iterator got = rit->find (str);
+                if(got != rit->end())
+                {
+                    return got->second;
+                }
+            }
+            return NULL;
+        }
         cSymbol * lookup(string str)
         {
-                for (auto rit=SymbolTable.rbegin(); rit!=SymbolTable.rend(); ++rit)
-                {
-                    unordered_map<string,cSymbol *>::const_iterator got = rit->find (str);
-                    if(got != rit->end())
-                    {
-                        return got->second;
-                    }
-                }
+
+            unordered_map<string,cSymbol *>::const_iterator got = SymbolTable.back().find (str);
+            if(got != SymbolTable.back().end())
+            {
+                return got->second;
+            }
+            return NULL;
         }
 
     private:
