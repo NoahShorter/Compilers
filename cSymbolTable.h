@@ -23,10 +23,11 @@ class cSymbolTable
             //Scope--;
             SymbolTable.pop_back();
         }
-        void insert(string str)
+        cSymbol * insert(string str)
         {
-            cSymbol newSym(str);
-            SymbolTable.back().insert({str, &newSym});
+            cSymbol * newSym = new cSymbol(str);
+            SymbolTable.back().insert({str, newSym});
+            return newSym;
         }
         cSymbol * lookup(string str)
         {

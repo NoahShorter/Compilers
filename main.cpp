@@ -19,6 +19,7 @@
 
 cSymbolTable g_symbolTable;
 long long cSymbol::nextId = 0;
+extern yylval_t yylval;
 
 // Program to test a symbol table implementation
 // Command line arguments:

@@ -14,12 +14,14 @@
 
 #include "tokens.h"
 #include "cSymbolTable.h"
+#include "lex.h"
 
     // comment out the other line to generate debug info
 #define DO_RETURN(a) return (a)
 //#define DO_RETURN(a) return Return(a)
 int Return(int val);
 extern cSymbolTable g_symbolTable;
+yylval_t yylval;
 %}
 
 %option noyywrap
