@@ -2,44 +2,45 @@
 
 #include <unordered_map>
 #include <list>
-#include "cSymbol"
+#include "cSymbol.h"
+
+using std::unordered_map;
+using std::string;
+using std::make_pair;
+using std::list;
 
 class cSymbolTable
 {
     public:
         void IncreaseScope()
         {
-            Scope++;
-            SymbolTable[Scope].clear();
+            //Scope++;
+            unordered_map<string, cSymbol *> temp;
+            SymbolTable.push_back(temp);
         }
-        void DecreaseScope();
+        void DecreaseScope()
         {
-            Scope--;
+            //Scope--;
+            SymbolTable.pop_back();
         }
-        void insert(std::string str, cSymbol * sym)
+        void insert(string str)
         {
-            SymbolTable[Scope].insert(std::make_pair<std::string, cSymbol *>(str, sym));
+            cSymbol newSym(str);
+            SymbolTable.back().insert({str, &newSym});
         }
-        cSymbol * lookup(std::string str)
+        cSymbol * lookup(string str)
         {
-            int scopeRemeber = Scope;
-            bool found = false;
-            while(!found)
-            {
-                std::unordered_map<std::string,cSymbol *>::const_iterator got = SymbolTable[Scope].find (str);
-                if(got == SymbolTable[Scope].end())
+                for (auto rit=SymbolTable.rbegin(); rit!=SymbolTable.rend(); ++rit)
                 {
-                    if(Scope != 0){Scope--;}
+                    unordered_map<string,cSymbol *>::const_iterator got = rit->find (str);
+                    if(got != rit->end())
+                    {
+                        return got->second;
+                    }
                 }
-                else
-                {
-                    Scope = scopeRemember;
-                    return got->second();
-                }
-            }
         }
 
     private:
         int Scope = -1;
-        std::list<std::unordered_map<std::string, cSymbol*>> SymbolTable;
-}
+        list<unordered_map<string, cSymbol*>> SymbolTable;
+};

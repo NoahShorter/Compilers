@@ -13,12 +13,13 @@
 //
 
 #include "tokens.h"
+#include "cSymbolTable.h"
 
     // comment out the other line to generate debug info
 #define DO_RETURN(a) return (a)
 //#define DO_RETURN(a) return Return(a)
 int Return(int val);
-
+extern cSymbolTable g_symbolTable;
 %}
 
 %option noyywrap
@@ -60,8 +61,14 @@ NOT                     DO_RETURN(NOT);
 PROGRAM                 DO_RETURN(PROGRAM);
 PROCEDURE               DO_RETURN(PROCEDURE);
 FUNCTION                DO_RETURN(FUNCTION);
-BEGIN                   DO_RETURN(OPEN);
-END                     DO_RETURN(CLOSE);
+BEGIN                   {   g_symbolTable.IncreaseScope();
+                            return yytext[0];
+                            //DO_RETURN(OPEN);
+                        }
+END                     {   g_symbolTable.DecreaseScope();
+                            return yytext[0];
+                            //DO_RETURN(CLOSE);
+                        }
 IF                      DO_RETURN(IF);
 THEN                    DO_RETURN(THEN);
 ELSE                    DO_RETURN(ELSE);
@@ -86,7 +93,10 @@ WRITE                   DO_RETURN(WRITE);
 "real"                  DO_RETURN(REAL);
 "char"                  DO_RETURN(CHAR);
 
-{IDENTIFIERS}           DO_RETURN(IDENTIFIER);
+{IDENTIFIERS}           {   yylval.symbol = g_symbolTable.insert(yytext);
+                            return IDENTIFIER;
+                            //DO_RETURN(IDENTIFIER);
+                        }
 
 {JUNK}                  DO_RETURN(JUNK_TOKEN);
 
