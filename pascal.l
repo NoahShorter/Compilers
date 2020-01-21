@@ -98,10 +98,10 @@ WRITE                   DO_RETURN(WRITE);
 "char"                  DO_RETURN(CHAR);
 
 {IDENTIFIERS}           {   
-                            if(g_symbolTable.lookup(tooLower(yytext)) == NULL)
-                                yylval.symbol = g_symbolTable.insert(tooLower(yytext));
+                            if(g_symbolTable.Lookup(tooLower(yytext)) == NULL)
+                                yylval.symbol = g_symbolTable.Insert(tooLower(yytext));
                             else
-                                yylval.symbol = g_symbolTable.lookup(tooLower(yytext));
+                                yylval.symbol = g_symbolTable.Lookup(tooLower(yytext));
                             return IDENTIFIER;
                             //DO_RETURN(IDENTIFIER);
                         }

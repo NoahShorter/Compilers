@@ -1,3 +1,15 @@
+//**********************************************
+// This class takes care of the stack of hash tables.
+//
+// Functions:
+//  IncreaseScope
+//  DecreaseScope
+//  Insert
+//  GlobalLookup
+//  Lookup
+//
+// Author: Noah Shorter
+//**********************************************
 #pragma once
 
 #include <unordered_map>
@@ -6,7 +18,6 @@
 
 using std::unordered_map;
 using std::string;
-using std::make_pair;
 using std::list;
 
 class cSymbolTable
@@ -14,22 +25,20 @@ class cSymbolTable
     public:
         void IncreaseScope()
         {
-            //Scope++;
             unordered_map<string, cSymbol *> temp;
             SymbolTable.push_back(temp);
         }
         void DecreaseScope()
         {
-            //Scope--;
             SymbolTable.pop_back();
         }
-        cSymbol * insert(string str)
+        cSymbol * Insert(string str)
         {
             cSymbol * newSym = new cSymbol(str);
             SymbolTable.back().insert({str, newSym});
             return newSym;
         }
-        cSymbol * globalLookup(string str)
+        cSymbol * GlobalLookup(string str)
         {
             for (auto rit=SymbolTable.rbegin(); rit!=SymbolTable.rend(); ++rit)
             {
@@ -41,7 +50,7 @@ class cSymbolTable
             }
             return NULL;
         }
-        cSymbol * lookup(string str)
+        cSymbol * Lookup(string str)
         {
 
             unordered_map<string,cSymbol *>::const_iterator got = SymbolTable.back().find (str);
