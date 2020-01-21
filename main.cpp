@@ -15,6 +15,7 @@
 #include <unistd.h>
 #include <iostream>
 #include <fstream>
+#include <string.h>
 #include "cSymbol.h"
 #include "cSymbolTable.h"
 #include "lex.h"
