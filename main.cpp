@@ -79,6 +79,7 @@ int main(int argc, char **argv)
         //     std::cout << token << ":" << yytext << "\n";
         token = yylex();
     }
+    
 
     std::cout << "</program>\n";
 

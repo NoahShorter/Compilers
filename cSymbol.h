@@ -18,9 +18,12 @@ using std::string;
 class cSymbol
 {
     public:
-        cSymbol(string name)
+        cSymbol(string name, int id = -1)
         {
-            m_id = ++nextId;
+            if(id == -1)
+                m_id = ++nextId;
+            else
+                m_id = id;
             m_name = name;
         }
 
@@ -36,8 +39,11 @@ class cSymbol
 
         // return the name of the cSymbol
         string GetName() { return m_name; }
+        int GetType() { return m_type; }
+        
     protected:
         static long long nextId;    // used to generate unique IDs
         long long m_id;             // ID for this cSymbol
         string m_name;              // name for this cSymbol
+        int m_tokenType = 1031;
 };
