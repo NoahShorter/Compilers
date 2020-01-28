@@ -39,7 +39,7 @@ class cSymbol
 
         // return the name of the cSymbol
         string GetName() { return m_name; }
-        int GetType() { return m_type; }
+        int GetType() { return m_tokenType; }
         
     protected:
         static long long nextId;    // used to generate unique IDs

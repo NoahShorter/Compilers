@@ -1,18 +1,19 @@
 %{
-//**************************************
-// lang.l
-//
-// Scanner definition file for CST 320 project
-//
-// Author: Phil Howard 
-// phil.howard@oit.edu
-// Edited by: Noah Shorter
-// noah.shorter@oit.edu
-//
-// Date: Dec. 6, 2017
-//
+    //**************************************
+    // lang.l
+    //
+    // Scanner definition file for CST 320 project
+    //
+    // Author: Phil Howard 
+    // phil.howard@oit.edu
+    // Edited by: Noah Shorter
+    // noah.shorter@oit.edu
+    //
+    // Date: Dec. 6, 2017
+    //
 
 #include "tokens.h"
+#include "cSymbol.h"
 #include "cSymbolTable.h"
 #include "lex.h"
 #include <string.h>
@@ -20,10 +21,11 @@
     // comment out the other line to generate debug info
 #define DO_RETURN(a) return (a)
 //#define DO_RETURN(a) return Return(a)
-int Return(int val);
-char * tooLower(char * str);
-extern cSymbolTable g_symbolTable;
-yylval_t yylval;
+    int Return(int val);
+    char * TooLower(char * str);
+    int ProccessIdentifier(char * token);
+    extern cSymbolTable g_symbolTable;
+    yylval_t yylval;
 %}
 
 %option noyywrap
@@ -66,7 +68,6 @@ W                   [Ww]
 X                   [Xx]
 Y                   [Yy]
 Z                   [Zz]
-
 
 %%
 
@@ -124,13 +125,9 @@ Z                   [Zz]
 {R}{E}{A}{L}                    DO_RETURN(REAL);
 {C}{H}{A}{R}                    DO_RETURN(CHAR);
 
-{IDENTIFIERS}                   {   
-                                    if(g_symbolTable.Lookup(tooLower(yytext)) == NULL)
-                                        yylval.symbol = g_symbolTable.Insert(tooLower(yytext));
-                                    else
-                                        yylval.symbol = g_symbolTable.Lookup(tooLower(yytext));
-                                    return IDENTIFIER;
-                                    //DO_RETURN(IDENTIFIER);
+{IDENTIFIERS}                   {   //ProccessIdentifier(yytext);
+                                    //return IDENTIFIER;
+                                    DO_RETURN(ProccessIdentifier(yytext));
                                 }
 
 {JUNK}                          DO_RETURN(JUNK_TOKEN);
@@ -144,7 +141,7 @@ int Return(int val)
     return val;
 }
 
-char * tooLower(char * str)
+char * TooLower(char * str)
 {
     if(str != NULL)
     {
@@ -156,6 +153,15 @@ char * tooLower(char * str)
     return str;
 }
 
+int ProccessIdentifier(char * token)
+{
+    if(g_symbolTable.Lookup(TooLower(token)) == NULL)
+    {
+        cSymbol * sym = new cSymbol(TooLower(token));
+        yylval.symbol = g_symbolTable.Insert(sym);
+    }
+    else
+        yylval.symbol = g_symbolTable.Lookup(TooLower(token));
 
-
-
+    return g_symbolTable.Lookup(TooLower(token))->GetType();
+}
