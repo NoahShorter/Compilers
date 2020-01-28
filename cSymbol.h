@@ -23,7 +23,10 @@ class cSymbol
             if(id == -1)
                 m_id = ++nextId;
             else
+            {
                 m_id = id;
+                m_tokenType = id;
+            }
             m_name = name;
         }
 

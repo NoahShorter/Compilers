@@ -90,41 +90,6 @@ Z                   [Zz]
 {A}{N}{D}                       DO_RETURN(AND);
 {N}{O}{T}                       DO_RETURN(NOT);
 
-{P}{R}{O}{G}{R}{A}{M}           DO_RETURN(PROGRAM);
-{P}{R}{O}{C}{E}{D}{U}{R}{E}     DO_RETURN(PROCEDURE);
-{F}{U}{N}{C}{T}{I}{O}{N}        DO_RETURN(FUNCTION);
-{B}{E}{G}{I}{N}                 {   g_symbolTable.IncreaseScope();
-                                    return yytext[0];
-                                    //DO_RETURN(OPEN);
-                                }
-{E}{N}{D}                       {   g_symbolTable.DecreaseScope();
-                                    return yytext[0];
-                                    //DO_RETURN(CLOSE);
-                                }
-{I}{F}                          DO_RETURN(IF);
-{T}{H}{E}{N}                    DO_RETURN(THEN);
-{E}{L}{S}{E}                    DO_RETURN(ELSE);
-{C}{L}{O}{S}{E}                 DO_RETURN(CLOSE);
-{W}{H}{I}{L}{E}                 DO_RETURN(WHILE);
-{R}{E}{P}{E}{A}{T}              DO_RETURN(REPEAT);
-{U}{N}{T}{I}{L}                 DO_RETURN(UNTIL);
-{F}{O}{R}                       DO_RETURN(FOR);
-{D}{O}                          DO_RETURN(DO);
-{T}{O}                          DO_RETURN(TO);
-{D}{O}{W}{N}{T}{O}              DO_RETURN(DOWNTO);
-{F}{O}{R}{W}{A}{R}{D}           DO_RETURN(FORWARD);
-{C}{O}{N}{S}{T}                 DO_RETURN(CONST);
-{T}{Y}{P}{E}                    DO_RETURN(TYPE);
-{V}{A}{R}                       DO_RETURN(VAR);
-{A}{R}{R}{A}{Y}                 DO_RETURN(ARRAY);
-{R}{E}{C}{O}{R}{D}              DO_RETURN(RECORD);
-{O}{F}                          DO_RETURN(OF);
-{N}{I}{L}                       DO_RETURN(NIL);
-{W}{R}{I}{T}{E}                 DO_RETURN(WRITE);
-{I}{N}{T}{E}{G}{E}{R}           DO_RETURN(INTEGER);
-{R}{E}{A}{L}                    DO_RETURN(REAL);
-{C}{H}{A}{R}                    DO_RETURN(CHAR);
-
 {IDENTIFIERS}                   {   //ProccessIdentifier(yytext);
                                     //return IDENTIFIER;
                                     DO_RETURN(ProccessIdentifier(yytext));
@@ -155,13 +120,31 @@ char * TooLower(char * str)
 
 int ProccessIdentifier(char * token)
 {
-    if(g_symbolTable.Lookup(TooLower(token)) == NULL)
+    cSymbol * temp = g_symbolTable.Lookup(TooLower(token));
+    cSymbol * Gtemp = g_symbolTable.GlobalLookup(TooLower(token));
+    if(strcmp(TooLower(token), "begin") == 0)
+        g_symbolTable.IncreaseScope();
+    else if (strcmp(TooLower(token), "end") == 0)
+        g_symbolTable.DecreaseScope();
+    if(temp == NULL && Gtemp == NULL)
     {
         cSymbol * sym = new cSymbol(TooLower(token));
         yylval.symbol = g_symbolTable.Insert(sym);
+        return g_symbolTable.Lookup(TooLower(token))->GetType();
+    }
+    else if (temp == NULL && Gtemp->GetType() == IDENTIFIER)
+    {
+        cSymbol * sym = new cSymbol(TooLower(token));
+        yylval.symbol = g_symbolTable.Insert(sym);
+        return g_symbolTable.Lookup(TooLower(token))->GetType();
+    }
+    else if (temp == NULL && Gtemp->GetType() != IDENTIFIER)
+    {
+        yylval.symbol = Gtemp;
+        return Gtemp->GetType();
     }
     else
-        yylval.symbol = g_symbolTable.Lookup(TooLower(token));
+        yylval.symbol = temp;
 
-    return g_symbolTable.Lookup(TooLower(token))->GetType();
+    return temp->GetType();
 }
