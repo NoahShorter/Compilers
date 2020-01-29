@@ -21,6 +21,9 @@
 #include "lex.h"
 #include "tokens.h"
 
+#define test1
+//#define test2
+
 cSymbolTable g_symbolTable;
 long long cSymbol::nextId = 0;
 extern yylval_t yylval;
@@ -67,21 +70,27 @@ int main(int argc, char **argv)
         }
     }
 
+    #ifdef test2
     std::cout << "<program>\n";
+    #endif
 
     token = yylex();
     while (token != 0)
     {
         // if we found an identifier, print it out
-        if (token == IDENTIFIER) 
-            std::cout << yylval.symbol->ToString() << "\n";
-        // else
-        //     std::cout << token << ":" << yytext << "\n";
+        #ifdef test2
+            if (token == IDENTIFIER) 
+                std::cout << yylval.symbol->ToString() << "\n";
+        #endif
+        #ifdef test1
+            std::cout << token << ":" << yytext << "\n";
+        #endif
         token = yylex();
     }
     
-
+    #ifdef test2
     std::cout << "</program>\n";
+    #endif
 
     return result;
 }

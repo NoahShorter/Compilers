@@ -42,32 +42,6 @@ WHITESPACE          [ \t\n]+
 JUNK                .
 INTEGER_CONST       [0-9]*
 REAL_CONST          [0-9]+.[0-9]+
-A                   [Aa]
-B                   [Bb]
-C                   [Cc]
-D                   [Dd]
-E                   [Ee]
-F                   [Ff]
-G                   [Gg]
-H                   [Hh]
-I                   [Ii]
-J                   [Jj]
-K                   [Kk]
-L                   [Ll]
-M                   [Mm]
-N                   [Nn]
-O                   [Oo]
-P                   [Pp]
-Q                   [Qq]
-R                   [Rr]
-S                   [Ss]
-T                   [Tt]
-U                   [Uu]
-V                   [Vv]
-W                   [Ww]
-X                   [Xx]
-Y                   [Yy]
-Z                   [Zz]
 
 %%
 
@@ -84,11 +58,6 @@ Z                   [Zz]
 ">="                            DO_RETURN(GE);
 ":="                            DO_RETURN(ASSIGN);
 "<>"                            DO_RETURN(NOT_EQUAL);
-{O}{R}                          DO_RETURN(OR);
-{D}{I}{V}                       DO_RETURN(DIV);
-{M}{O}{D}                       DO_RETURN(MOD);
-{A}{N}{D}                       DO_RETURN(AND);
-{N}{O}{T}                       DO_RETURN(NOT);
 
 {IDENTIFIERS}                   {   //ProccessIdentifier(yytext);
                                     //return IDENTIFIER;

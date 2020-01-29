@@ -28,7 +28,6 @@ void cSymbolTable::DecreaseScope()
 // Inserts str into the symbol table
 cSymbol * cSymbolTable::Insert(cSymbol * symbol)
 {
-    //cSymbol * newSym = new cSymbol(str);
     SymbolTable.back().insert({symbol->GetName(), symbol});
     return symbol;
 }
@@ -114,5 +113,15 @@ void cSymbolTable::InitTable()
     keyword = new cSymbol("real", REAL);
     Insert(keyword);
     keyword = new cSymbol("char", CHAR);
+    Insert(keyword);
+    keyword = new cSymbol("or", OR);
+    Insert(keyword);
+    keyword = new cSymbol("div", DIV);
+    Insert(keyword);
+    keyword = new cSymbol("mod", MOD);
+    Insert(keyword);
+    keyword = new cSymbol("and", AND);
+    Insert(keyword);
+    keyword = new cSymbol("not", NOT);
     Insert(keyword);
 }
