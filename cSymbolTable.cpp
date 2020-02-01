@@ -6,6 +6,7 @@
 //**************************************************************
 #include "cSymbolTable.h"
 
+
 cSymbolTable::cSymbolTable()
 {
     IncreaseScope();
@@ -43,7 +44,7 @@ cSymbol * cSymbolTable::GlobalLookup(string str)
             return got->second;
         }
     }
-    return NULL;
+    return nullptr;
 }
 
 // Only looks up current scope
@@ -55,13 +56,19 @@ cSymbol * cSymbolTable::Lookup(string str)
     {
         return got->second;
     }
-    return NULL;
+    return nullptr;
 }
 
 // Inserts language keywords into the table.
 void cSymbolTable::InitTable()
 {
     cSymbol * keyword;
+    keyword = new cSymbol("integer");
+    Insert(keyword);
+    keyword = new cSymbol("real");
+    Insert(keyword);
+    keyword = new cSymbol("char");
+    Insert(keyword);
     keyword = new cSymbol("program", PROGRAM);
     Insert(keyword);
     keyword = new cSymbol("procedure", PROCEDURE);
@@ -108,12 +115,6 @@ void cSymbolTable::InitTable()
     Insert(keyword);
     keyword = new cSymbol("nil", NIL);
     Insert(keyword);
-    keyword = new cSymbol("integer", INTEGER);
-    Insert(keyword);
-    keyword = new cSymbol("real", REAL);
-    Insert(keyword);
-    keyword = new cSymbol("char", CHAR);
-    Insert(keyword);
     keyword = new cSymbol("or", OR);
     Insert(keyword);
     keyword = new cSymbol("div", DIV);
@@ -123,5 +124,7 @@ void cSymbolTable::InitTable()
     keyword = new cSymbol("and", AND);
     Insert(keyword);
     keyword = new cSymbol("not", NOT);
+    Insert(keyword);
+    keyword = new cSymbol("write", WRITE);
     Insert(keyword);
 }

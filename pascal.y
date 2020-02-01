@@ -29,6 +29,7 @@
     cSymbol*        symbol;
     cDeclsNode*     decls_node;
     cDeclNode*      decl_node;
+    cExprListNode*  exprs_node;
     }
 
 %{
@@ -94,14 +95,14 @@
 %type <ast_node> procHeader
 %type <stmts_node> statements
 %type <stmt_node> statement
-%type <ast_node> expr
-%type <ast_node> oneExpr
-%type <ast_node> addit
-%type <ast_node> term
-%type <ast_node> fact
+%type <expr_node> expr
+%type <expr_node> oneExpr
+%type <expr_node> addit
+%type <expr_node> term
+%type <expr_node> fact
 %type <ast_node> variable
 %type <ast_node> varpart
-%type <ast_node> exprList
+%type <exprs_node> exprList
 %type <ast_node> recHeader
 %%
 
@@ -114,7 +115,8 @@ program: header block '.'
                                       YYABORT;
                                 }
 header: PROGRAM IDENTIFIER ';'
-                                {  g_SymbolTable.IncreaseScope();
+                                { 
+                                   g_symbolTable.IncreaseScope();
                                    $$ = $2; 
                                 }
 block:  decls OPEN statements CLOSE
@@ -219,7 +221,10 @@ constant: INT_VAL
                                 { }
 
 statements: statements statement
-                                { }
+                                { 
+                                    $$ = $1;
+                                    $$->AddStmt($2);
+                                }
     |   statement
                                 { $$ = new cStmtsNode($1); }
 
@@ -242,7 +247,7 @@ statement: variable ASSIGN expr ';'
     |   IDENTIFIER ';'
                                 { }
     |   WRITE '(' exprList ')' ';'
-                                { }
+                                { $$ = new cWriteNode($3); }
     |   OPEN statements CLOSE
                                 { }
     |   NIL ';'
@@ -251,13 +256,16 @@ statement: variable ASSIGN expr ';'
                                 { }
 
 exprList: exprList ',' oneExpr
-                                { }
+                                { 
+                                    $$ = $1;
+                                    $$->AddExpr($3);    
+                                }
         | oneExpr
-                                { }
+                                { $$ = new cExprListNode($1); }
         | /* empty */
                                 { }
 oneExpr: expr
-                                { }
+                                { $$ = $1; }
 
 func_call:  IDENTIFIER '(' exprList ')'
                                 { }
@@ -273,50 +281,50 @@ varpart:  IDENTIFIER
                                 { }
 
 expr:       expr '=' addit
-                                { }
+                                { $$ = new cBinaryExprNode($1, $3, '='); }
         |   expr '>' addit
-                                { }
+                                { $$ = new cBinaryExprNode($1, $3, '>'); }
         |   expr '<' addit
-                                { }
+                                { $$ = new cBinaryExprNode($1, $3, '<'); }
         |   expr LE addit
-                                { }
+                                { $$ = new cBinaryExprNode($1, $3, LE); }
         |   expr GE addit
-                                { }
+                                { $$ = new cBinaryExprNode($1, $3, GE); }
         |   expr NOT_EQUAL addit
-                                {}
+                                { $$ = new cBinaryExprNode($1, $3, NOT_EQUAL); }
         |   addit
-                                { }
+                                { $$ = $1; }
 
 addit:      addit '+' term
-                                { }
+                                { $$ = new cBinaryExprNode($1, $3, '+'); }
         |   addit '-' term
-                                { }
+                                { $$ = new cBinaryExprNode($1, $3, '-'); }
         |   addit OR term
-                                { }
+                                { $$ = new cBinaryExprNode($1, $3, OR);}
         |   term
-                                { }
+                                { $$ = $1; }
         |   '-' term
                                 { }
 
 term:       term '*' fact
-                                { }
+                                { $$ = new cBinaryExprNode($1, $3, '*'); }
         |   term '/' fact
-                                { }
+                                { $$ = new cBinaryExprNode($1, $3, '/'); }
         |   term MOD fact
-                                { }
+                                { $$ = new cBinaryExprNode($1, $3, MOD);}
         |   term DIV fact
-                                { }
+                                { $$ = new cBinaryExprNode($1, $3, DIV);}
         |   term AND fact
-                                { }
+                                { $$ = new cBinaryExprNode($1, $3, AND);}
         |   fact
-                                { }
+                                { $$ = $1; }
 
 fact:        '(' expr ')'
-                                { }
+                                { $$ = $2; }
         |   INT_VAL
-                                { }
+                                { $$ = new cIntExprNode(atoi(yytext)); }
         |   REAL_VAL
-                                { }
+                                { $$ = new cRealExprNode(atof(yytext)); }
         |   variable
                                 { }
         |   func_call

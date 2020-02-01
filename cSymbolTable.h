@@ -15,15 +15,19 @@
 #include <unordered_map>
 #include <list>
 #include "cSymbol.h"
-#include "tokens.h"
+#include "astnodes.h"
+#include "pascalparse.h"
 
 using std::unordered_map;
 using std::string;
 using std::list;
 
+typedef unordered_map<string, cSymbol*> symbolTable_t;
+    
 class cSymbolTable
 {
     public:
+
         cSymbolTable();
 
         void IncreaseScope();
@@ -39,3 +43,5 @@ class cSymbolTable
         int Scope = -1;
         list<unordered_map<string, cSymbol*>> SymbolTable;
 };
+
+extern cSymbolTable g_symbolTable;

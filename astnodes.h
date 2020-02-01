@@ -20,5 +20,7 @@
 #include "cWriteNode.h"
 #include "cExprNode.h"
 #include "cIntExprNode.h"
+#include "cRealExprNode.h"
 #include "cNilNode.h"
+#include "cBinaryExprNode.h"
 

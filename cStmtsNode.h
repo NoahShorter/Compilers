@@ -20,6 +20,11 @@ class cStmtsNode : public cAstNode
             AddChild(stmt);
         }
 
+        void AddStmt(cStmtNode *stmt)
+        {
+            AddChild(stmt);
+        }
+
         virtual string NodeType() { return string("stmts"); }
         virtual void Visit(cVisitor *visitor) { visitor->Visit(this); }
 };

@@ -21,6 +21,11 @@ class cExprListNode : public cAstNode
             if (param != nullptr) AddChild(param);
         }
 
+        void AddExpr(cExprNode *param = nullptr)
+        {
+            if (param != nullptr) AddChild(param);
+        }
+
         virtual string NodeType() { return string("exprList"); }
         virtual void Visit(cVisitor *visitor) { visitor->Visit(this); }
 };

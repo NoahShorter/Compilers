@@ -12,16 +12,21 @@
 
 #include <string>
 #include <utility>
+#include "cAstNode.h"
+#include "pascalparse.h"
 
 using std::string;
 
-class cSymbol
+class cSymbol : public cAstNode
 {
     public:
-        cSymbol(string name, int id = -1)
+        cSymbol(string name, int id = -1) : cAstNode()
         {
             if(id == -1)
+            {
                 m_id = ++nextId;
+                m_tokenType = IDENTIFIER;
+            }
             else
             {
                 m_id = id;
@@ -30,23 +35,24 @@ class cSymbol
             m_name = name;
         }
 
-        // Used to print cSymbols
-        string ToString()
+        virtual string AttributesToString()
         {
-            string result("<sym id=\"");
+            string result(" id=\"");
             result += std::to_string(m_id);
-            result += "\" name=\"" + m_name + "\" />";
-
+            result += "\" name=\"" + m_name + "\"";
             return result;
         }
 
         // return the name of the cSymbol
         string GetName() { return m_name; }
         int GetType() { return m_tokenType; }
-        
+
+        virtual string NodeType() { return string("sym"); }
+        virtual void Visit(cVisitor *visitor) { visitor->Visit(this);}
+
     protected:
         static long long nextId;    // used to generate unique IDs
         long long m_id;             // ID for this cSymbol
         string m_name;              // name for this cSymbol
-        int m_tokenType = 1031;
+        int m_tokenType;
 };
