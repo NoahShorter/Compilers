@@ -23,4 +23,10 @@
 #include "cRealExprNode.h"
 #include "cNilNode.h"
 #include "cBinaryExprNode.h"
-
+#include "cBaseTypeNode.h"
+#include "cIdListNode.h"
+#include "cVarDeclNode.h"
+#include "cVarDeclsNode.h"
+#include "cVarExprNode.h"
+#include "cAssignNode.h"
+#include "cUnaryExprNode.h"

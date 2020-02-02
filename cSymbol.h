@@ -25,7 +25,9 @@ class cSymbol : public cAstNode
             if(id == -1)
             {
                 m_id = ++nextId;
-                m_tokenType = IDENTIFIER;
+                if(m_id == 1 || m_id == 2 || m_id == 3) 
+                    m_tokenType = TYPE_ID;
+                else m_tokenType = IDENTIFIER;
             }
             else
             {

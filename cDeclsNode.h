@@ -15,9 +15,9 @@ class cDeclsNode : public cAstNode
 {
     public:
         // param is the first decl in this decls
-        cDeclsNode(cDeclNode *decl = nullptr) : cAstNode()
+        cDeclsNode(cDeclsNode *decl = nullptr) : cAstNode()
         {
-            if (decl != nullptr) AddChild(decl);
+            if (decl != nullptr) AddAllChildren(decl);
         }
 
         // Copy all the decls from another node into this one

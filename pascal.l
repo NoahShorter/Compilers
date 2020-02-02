@@ -18,8 +18,8 @@
 #include "pascalparse.h"
 
     // comment out the other line to generate debug info
-//#define DO_RETURN(a) return (a)
-#define DO_RETURN(a) return Return(a)
+#define DO_RETURN(a) return (a)
+//#define DO_RETURN(a) return Return(a)
 int Return(int val);
 char * TooLower(char * str);
 int ProccessIdentifier(char * token);
@@ -55,8 +55,14 @@ REAL_CONST          [0-9]+\.[0-9]+
 
 {PUNCTUATION}                   DO_RETURN(yytext[0]);
 
-{INTEGER_CONST}                 DO_RETURN(INT_VAL);
-{REAL_CONST}                    DO_RETURN(REAL_VAL);
+{INTEGER_CONST}                 {   
+                                    yylval.int_val = atoi(yytext);
+                                    DO_RETURN(INT_VAL);
+                                } 
+{REAL_CONST}                    {
+                                    yylval.real_val = atof(yytext);
+                                    DO_RETURN(REAL_VAL);
+                                }
 
 {JUNK}                          DO_RETURN(JUNK_TOKEN);
 
