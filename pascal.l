@@ -18,8 +18,8 @@
 #include "pascalparse.h"
 
     // comment out the other line to generate debug info
-#define DO_RETURN(a) return (a)
-//#define DO_RETURN(a) return Return(a)
+//#define DO_RETURN(a) return (a)
+#define DO_RETURN(a) return Return(a)
 int Return(int val);
 char * TooLower(char * str);
 int ProccessIdentifier(char * token);
