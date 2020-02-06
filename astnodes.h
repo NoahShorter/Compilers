@@ -32,3 +32,8 @@
 #include "cUnaryExprNode.h"
 #include "cIfNode.h"
 #include "cCompundStmtNode.h"
+#include "cWhileNode.h"
+#include "cProcDeclNode.h"
+#include "cProcCallNode.h"
+#include "cFuncDeclNode.h"
+#include "cFuncExprNode.h"

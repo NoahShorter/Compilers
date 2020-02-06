@@ -20,14 +20,13 @@ using std::string;
 class cSymbol : public cAstNode
 {
     public:
-        cSymbol(string name, int id = -1) : cAstNode()
+        cSymbol(string name, int id = -1, bool isType = false) : cAstNode()
         {
+            m_isType = isType;
             if(id == -1)
             {
                 m_id = ++nextId;
-                if(m_id == 1 || m_id == 2 || m_id == 3) 
-                    m_tokenType = TYPE_ID;
-                else m_tokenType = IDENTIFIER;
+                m_tokenType = IDENTIFIER;
             }
             else
             {
@@ -49,6 +48,11 @@ class cSymbol : public cAstNode
         string GetName() { return m_name; }
         int GetType() { return m_tokenType; }
 
+        bool IsType() { return m_isType; }
+
+        cDeclNode *GetDecl() { return m_decl; }
+        void SetDecl(cDeclNode *decl) { m_decl =decl; }
+
         virtual string NodeType() { return string("sym"); }
         virtual void Visit(cVisitor *visitor) { visitor->Visit(this);}
 
@@ -57,4 +61,6 @@ class cSymbol : public cAstNode
         long long m_id;             // ID for this cSymbol
         string m_name;              // name for this cSymbol
         int m_tokenType;
+        cDeclNode *m_decl;
+        bool m_isType;
 };

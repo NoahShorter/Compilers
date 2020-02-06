@@ -65,11 +65,14 @@ cSymbol * cSymbolTable::Lookup(string str)
 void cSymbolTable::InitTable()
 {
     cSymbol * keyword;
-    keyword = new cSymbol("integer");
+    keyword = new cSymbol("char", -1, true);
+    keyword->SetDecl(new cBaseTypeNode(keyword, 1));
     Insert(keyword);
-    keyword = new cSymbol("real");
+    keyword = new cSymbol("integer", -1, true);
+    keyword->SetDecl(new cBaseTypeNode(keyword, 4));
     Insert(keyword);
-    keyword = new cSymbol("char");
+    keyword = new cSymbol("real", -1, true);
+    keyword->SetDecl(new cBaseTypeNode(keyword, 8, true));
     Insert(keyword);
     keyword = new cSymbol("program", PROGRAM);
     Insert(keyword);

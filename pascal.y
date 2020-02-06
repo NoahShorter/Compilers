@@ -32,8 +32,10 @@
     cExprListNode*  exprs_node;
     cBaseTypeNode*  baset_node;
     cIdListNode*    ids_node;
-    cVarDeclNode*   vardecl_node;
+    cVarDeclsNode*  vardecl_node;
     cVarExprNode*   varexpr_node;
+    cFuncDeclNode*  funcdecl_node;
+    cProcDeclNode*  procdecl_node;
     }
 
 %{
@@ -73,13 +75,13 @@
 %type <program_node> program
 %type <symbol> header
 %type <block_node> block
-%type <baset_node> type
+%type <symbol> type
 %type <decls_node> decls
-%type <ast_node> constdecls
-%type <ast_node> constdecl
+%type <decls_node> constdecls
+%type <decl_node> constdecl
 %type <ast_node> constant
-%type <ast_node> typedecls
-%type <ast_node> typedecl
+%type <decls_node> typedecls
+%type <decl_node> typedecl
 %type <ast_node> singleType
 %type <ast_node> rangeList
 %type <ast_node> range
@@ -88,15 +90,15 @@
 %type <ast_node> recorddef
 %type <decls_node> vardecls
 %type <decls_node> vardecl;
-%type <ast_node> procdecls
-%type <ast_node> paramSpec
-%type <ast_node> procdecl
-%type <ast_node> parlist
+%type <decls_node> procdecls
+%type <decls_node> paramSpec
+%type <decl_node> procdecl
+%type <vardecl_node> parlist
 %type <ids_node> idlist
-%type <ast_node> func_call
-%type <ast_node> funcProto
-%type <ast_node> funcHeader
-%type <ast_node> procHeader
+%type <expr_node> func_call
+%type <funcdecl_node> funcProto
+%type <funcdecl_node> funcHeader
+%type <procdecl_node> procHeader
 %type <stmts_node> statements
 %type <stmt_node> statement
 %type <expr_node> expr
@@ -127,7 +129,16 @@ block:  decls OPEN statements CLOSE
                                 { $$ = new cBlockNode($1, $3); }
 
 decls: constdecls typedecls vardecls procdecls
-                                { $$ = $3; }
+                                { 
+                                    if( $3 != nullptr ||
+                                        $4 != nullptr)
+                                    {
+                                    $$ = new cDeclsNode($3);
+                                    $$->AddDecls($4);
+                                    }
+                                    else
+                                        $$ = nullptr;
+                                }
 constdecls: CONST constdecl ';'
                                 { }
         | /*empty */
@@ -175,16 +186,27 @@ onevar: goodvar ';'
 goodvar: idlist ':' type
                                 { $$ = new cVarDeclsNode($3, $1); }
 procdecls: procdecls procdecl
-                                { }
+                                { 
+                                    $$ = new cDeclsNode($1);
+                                    $$->AddDecl($2);
+                                }
         | /* empty */
-                                { }
+                                { $$ = nullptr; }
 
 procdecl: procHeader paramSpec ';' block ';'
-                                { }
+                                { 
+                                    $1->AddParamBlock($4, $2);
+                                    g_symbolTable.DecreaseScope();
+                                    $$ = $1;
+                                }
         |  procHeader paramSpec ';' FORWARD ';'
                                 { }
         |  funcProto ';' block ';'
-                                { }
+                                { 
+                                    $1->AddBlock($3); 
+                                    g_symbolTable.DecreaseScope();
+                                    $$ = $1;
+                                }
         |  funcProto ';' FORWARD ';'
                                 { }
         |  error ';' block ';'
@@ -192,15 +214,21 @@ procdecl: procHeader paramSpec ';' block ';'
         |  error ';' FORWARD ';'
                                 { }
 procHeader: PROCEDURE IDENTIFIER 
-                                { }
+                                { 
+                                    $$ = new cProcDeclNode($2);
+                                    g_symbolTable.IncreaseScope();
+                                }
 funcHeader: FUNCTION IDENTIFIER
-                                { }
+                                { 
+                                    $$ = new cFuncDeclNode($2); 
+                                    g_symbolTable.IncreaseScope();
+                                }
 funcProto: funcHeader paramSpec ':' type
-                                { }
+                                { $$->AddParamType($4, $2); }
 paramSpec: '(' parlist ')'
-                                { }
+                                { $$ = $2; }
         | /* empty */
-                                { }
+                                { $$ = nullptr; }
 
 idlist: idlist ',' IDENTIFIER
                                 { 
@@ -211,16 +239,22 @@ idlist: idlist ',' IDENTIFIER
                                 { $$ = new cIdListNode($1); }
 
 parlist: parlist ';' VAR idlist ':' type 
-                                { }
+                                { 
+                                    $$ = $1;
+                                    $$->AddVarDecls($6, $4);
+                                }
     |    parlist ';' idlist ':' type 
-                                { }
+                                { 
+                                    $$ = $1;
+                                    $$->AddVarDecls($5, $3);
+                                }
     |    VAR idlist ':' type
-                                { }
+                                { $$ = new cVarDeclsNode($4, $2);}
     |    idlist ':' type
-                                { }
+                                { $$ = new cVarDeclsNode($3, $1);}
 
 type: TYPE_ID
-                                { $$ = new cBaseTypeNode($1); }
+                                { $$ = $1; }
 recHeader: RECORD
                                 { }
 recorddef: vardecl CLOSE
@@ -247,15 +281,15 @@ statement: variable ASSIGN expr ';'
     |   REPEAT statements UNTIL expr ';'
                                 { }
     |   WHILE expr DO statement
-                                { }
+                                { $$ = new cWhileNode($2, $4); }
     |   FOR IDENTIFIER ASSIGN expr TO expr DO statement
                                 {}
     |   FOR IDENTIFIER ASSIGN expr DOWNTO expr DO statement
                                 {}
     |   IDENTIFIER '(' exprList ')' ';'
-                                { }
+                                { $$ = new cProcCallNode($1, $3); }
     |   IDENTIFIER ';'
-                                { }
+                                { $$ = new cProcCallNode($1);}
     |   WRITE '(' exprList ')' ';'
                                 { $$ = new cWriteNode($3); }
     |   OPEN statements CLOSE
@@ -278,7 +312,7 @@ oneExpr: expr
                                 { $$ = $1; }
 
 func_call:  IDENTIFIER '(' exprList ')'
-                                { }
+                                { $$ = new cFuncExprNode($1, $3); }
 
 variable: variable '.' varpart
                                 { }
@@ -338,7 +372,7 @@ fact:        '(' expr ')'
         |   variable
                                 { }
         |   func_call
-                                { }
+                                { $$ = $1; }
         |   NOT fact
                                 { $$ = new cUnaryExprNode(NOT, $2); }
 

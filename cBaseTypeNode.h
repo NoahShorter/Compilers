@@ -11,20 +11,15 @@
 #include "cAstNode.h"
 #include "cSymbol.h"
 
-class cBaseTypeNode : public cAstNode
+class cBaseTypeNode : public cDeclNode
 {
     public:
         // param is the first decl in this decls
-        cBaseTypeNode(cSymbol *type) : cAstNode()
+        cBaseTypeNode(cSymbol *type, int size, bool isFloat = false) : cDeclNode()
         {
             m_name = type->GetName();
-            if(m_name == "integer") m_size = 4;
-            else if(m_name == "char") m_size = 1;
-            else if(m_name == "real") 
-            {
-                m_size = 8;
-                m_isFloat = 1;
-            }
+            m_size = size;
+            m_isFloat = isFloat;
         }
 
         virtual string AttributesToString() 

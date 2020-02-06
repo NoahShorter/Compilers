@@ -1,10 +1,10 @@
 #pragma once
 //**************************************
-// cCompundStmtNode.h
+// cWhileNode.h
 //
-// Defines AST node for compund statements
+// Defines AST node for WHILE statements
 //
-// Inherits from cStmtNode so compund statments can go in statement lists, and be
+// Inherits from cStmtNode so WHILE statments can go in statement lists, and be
 // used anywhere a statement is legal.
 //
 // Author: Noah Shorter 
@@ -15,15 +15,16 @@
 #include "cStmtNode.h"
 #include "cExprListNode.h"
 
-class cCompoundStmtNode : public cStmtNode
+class cWhileNode : public cStmtNode
 {
     public:
         // param is the value to be printed
-        cCompoundStmtNode(cStmtsNode *stmts) : cStmtNode()
+        cWhileNode(cExprNode *expr, cStmtNode *stmt) : cStmtNode()
         {
-            AddAllChildren(stmts);
+            AddChild(expr);
+            AddChild(stmt);
         }
 
-        virtual string NodeType() { return string("compound"); }
+        virtual string NodeType() { return string("while"); }
         virtual void Visit(cVisitor *visitor) { visitor->Visit(this); }
 };

@@ -21,10 +21,16 @@ class cDeclsNode : public cAstNode
         }
 
         // Copy all the decls from another node into this one
-        void AddDecls(cDeclsNode *decls) { AddAllChildren(decls); }
+        void AddDecls(cDeclsNode *decls) 
+        { 
+            if(decls != nullptr) AddAllChildren(decls);
+        }
 
         // Add another decl to the list
-        void AddDecl(cDeclNode *decl) { AddChild(decl); }
+        void AddDecl(cDeclNode *decl) 
+        { 
+            if(decl != nullptr) AddChild(decl); 
+        }
 
         virtual string NodeType() { return string("decls"); }
         virtual void Visit(cVisitor *visitor) { visitor->Visit(this); }

@@ -16,12 +16,21 @@ class cVarDeclsNode : public cDeclsNode
 {
     public:
         // param is the first decl in this decls
-        cVarDeclsNode(cBaseTypeNode * type, cIdListNode * idList) : cDeclsNode()
+        cVarDeclsNode(cSymbol * type, cIdListNode * idList) : cDeclsNode()
         {
             int count = idList->NumKids();
             for(int ii = 0; ii < count ; ++ii)
             {
-                AddChild(new cVarDeclNode(type, idList->GetKid(ii)));
+                AddChild(new cVarDeclNode(type->GetDecl(), idList->GetKid(ii)));
+            }
+        }
+
+        void AddVarDecls(cSymbol * type, cIdListNode * idList)
+        {
+            int count = idList->NumKids();
+            for(int ii = 0; ii < count ; ++ii)
+            {
+                AddChild(new cVarDeclNode(type->GetDecl(), idList->GetKid(ii)));
             }
         }
 

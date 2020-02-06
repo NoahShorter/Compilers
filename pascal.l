@@ -100,5 +100,7 @@ int ProccessIdentifier(char * token)
         yylval.symbol = new cSymbol(TooLower(token));
 
     // Return the type.
+    if( yylval.symbol->IsType())
+        return TYPE_ID;
     return (yylval.symbol->GetType());
 }
