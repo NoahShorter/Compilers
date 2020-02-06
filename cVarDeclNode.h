@@ -10,6 +10,9 @@
 
 #include "cAstNode.h"
 #include "cDeclNode.h"
+#include "cSymbolTable.h"
+
+extern cSymbolTable g_symbolTable;
 
 class cVarDeclNode : public cDeclNode
 {
@@ -17,6 +20,10 @@ class cVarDeclNode : public cDeclNode
         // param is the first decl in this decls
         cVarDeclNode(cBaseTypeNode * type, cSymbol * id) : cDeclNode()
         {
+            cSymbol *token = g_symbolTable.GlobalLookup(id->GetName());
+            if (token == nullptr)
+                g_symbolTable.Insert(id);
+
             AddChild(type);
             AddChild(id);
         }

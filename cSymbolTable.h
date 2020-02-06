@@ -15,8 +15,6 @@
 #include <unordered_map>
 #include <list>
 #include "cSymbol.h"
-#include "astnodes.h"
-#include "pascalparse.h"
 
 using std::unordered_map;
 using std::string;

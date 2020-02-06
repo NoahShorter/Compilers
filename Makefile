@@ -32,6 +32,9 @@ clean:
 .c.o:
 	g++ $(COPTS) $? -o $@
 
+cSymbolTable.o: cSymbolTable.cpp
+	g++ $(COPTS) cSymbolTable.cpp -o $@
+
 main.o: main.cpp pascalparse.c pascallex.c 
 	g++ $(COPTS) main.cpp -o $@
 

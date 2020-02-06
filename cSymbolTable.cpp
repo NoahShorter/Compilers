@@ -5,6 +5,8 @@
 //
 //**************************************************************
 #include "cSymbolTable.h"
+#include "astnodes.h"
+#include "pascalparse.h"
 
 
 cSymbolTable::cSymbolTable()

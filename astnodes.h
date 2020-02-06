@@ -30,3 +30,5 @@
 #include "cVarExprNode.h"
 #include "cAssignNode.h"
 #include "cUnaryExprNode.h"
+#include "cIfNode.h"
+#include "cCompundStmtNode.h"

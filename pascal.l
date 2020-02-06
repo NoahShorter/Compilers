@@ -18,8 +18,8 @@
 #include "pascalparse.h"
 
     // comment out the other line to generate debug info
-//#define DO_RETURN(a) return (a)
-#define DO_RETURN(a) return Return(a)
+#define DO_RETURN(a) return (a)
+//#define DO_RETURN(a) return Return(a)
 int Return(int val);
 char * TooLower(char * str);
 int ProccessIdentifier(char * token);
@@ -89,11 +89,16 @@ char * TooLower(char * str)
 
 int ProccessIdentifier(char * token)
 {
-    yylval.symbol = g_symbolTable.GlobalLookup(TooLower(token));
+    // set the token to a lower case.
+    char * lowerString = TooLower(token);
+
+    // perform a global lookup.
+    yylval.symbol = g_symbolTable.GlobalLookup(lowerString);
+
+    // If the symbol is not in the table, create a new symbol
     if(yylval.symbol == nullptr)
-    {
         yylval.symbol = new cSymbol(TooLower(token));
-        g_symbolTable.Insert(yylval.symbol);
-    }
+
+    // Return the type.
     return (yylval.symbol->GetType());
 }

@@ -241,9 +241,9 @@ statements: statements statement
 statement: variable ASSIGN expr ';'
                                 { $$ = new cAssignNode($1, $3); }
     |   IF expr THEN statement
-                                { }
+                                { $$ = new cIfNode($2, $4); }
     |   IF expr THEN statement ELSE statement
-                                { }
+                                { $$ = new cIfNode($2, $4, $6); }
     |   REPEAT statements UNTIL expr ';'
                                 { }
     |   WHILE expr DO statement
@@ -259,7 +259,7 @@ statement: variable ASSIGN expr ';'
     |   WRITE '(' exprList ')' ';'
                                 { $$ = new cWriteNode($3); }
     |   OPEN statements CLOSE
-                                { }
+                                { $$ = new cCompoundStmtNode($2); }
     |   NIL ';'
                                 { $$ = new cNilNode(); }
     |   error ';'
