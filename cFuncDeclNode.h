@@ -21,9 +21,19 @@ class cFuncDeclNode : public cDeclNode
         // param is the block that makes up the program
         cFuncDeclNode(cSymbol *name) : cDeclNode()
         {
-            g_symbolTable.Insert(name);
+            cSymbol *token = g_symbolTable.GlobalLookup(name->GetName());
+            if (token == nullptr)
+            {
+                token = name;
+                g_symbolTable.Insert(name);
+            }
+            else
+            {
+                token = new cSymbol(name->GetName());
+                g_symbolTable.Insert(token);
+            }
 
-            AddChild(name);
+            AddChild(token);
         }
 
         void AddParamType(cSymbol *type, cDeclsNode *vardecls = nullptr)
