@@ -1,8 +1,8 @@
 #pragma once
 //**************************************
-// cRecordDeclNode.h
+// cArrayDeclNode.h
 //
-// Defines RecordDecl node for a lang program
+// Defines ArrayDecl node for a lang program
 //
 // Author: Noah Shorter
 // noah.shorter@oit.edu
@@ -15,19 +15,20 @@
 #include "cSymbolTable.h"
 #include "cDeclsNode.h"
 
-class cRecordDeclNode : public cDeclNode
+class cArrayDeclNode : public cDeclNode
 {
     public:
         // param is the block that makes up the program
-        cRecordDeclNode(cSymbol *name, cVarDeclsNode *vardecls) : cDeclNode()
+        cArrayDeclNode(cSymbol *name, cSymbol *type, cDeclsNode *ranges) : cDeclNode()
         {
             name->SetDecl(this);
             name->SetIsType(true);
             g_symbolTable.Insert(name);
             AddChild(name);
-            AddChild(vardecls);
+            AddChild(type->GetDecl());
+            AddChild(ranges);
         }
 
-        virtual string NodeType() { return string("record"); }
+        virtual string NodeType() { return string("array"); }
         virtual void Visit(cVisitor *visitor) { visitor->Visit(this); }
 };

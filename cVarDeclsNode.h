@@ -25,6 +25,11 @@ class cVarDeclsNode : public cDeclsNode
             }
         }
 
+        cVarDeclsNode(cVarDeclsNode *vardecls) : cDeclsNode()
+        {
+            AddAllChildren(vardecls);
+        }
+
         void AddVarDecls(cSymbol * type, cIdListNode * idList)
         {
             int count = idList->NumKids();
@@ -32,6 +37,11 @@ class cVarDeclsNode : public cDeclsNode
             {
                 AddChild(new cVarDeclNode(type->GetDecl(), idList->GetKid(ii)));
             }
+        }
+
+        void AddVarDecls(cVarDeclsNode *vardecls)
+        {
+                AddAllChildren(vardecls);
         }
 
         virtual string NodeType() { return string("var_decls"); }

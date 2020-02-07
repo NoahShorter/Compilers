@@ -49,6 +49,7 @@ class cSymbol : public cAstNode
         int GetType() { return m_tokenType; }
 
         bool IsType() { return m_isType; }
+        void SetIsType(bool isType) { m_isType = isType; } 
 
         cDeclNode *GetDecl() { return m_decl; }
         void SetDecl(cDeclNode *decl) { m_decl =decl; }

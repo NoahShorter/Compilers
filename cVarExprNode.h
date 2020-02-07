@@ -24,6 +24,16 @@ class cVarExprNode : public cExprNode
             AddChild(variable);
         }
 
+        void AddVar(cSymbol *variable)
+        {
+            AddChild(variable);
+        }
+
+        void AddVar(cExprListNode *exprList)
+        {
+            AddChild(exprList);
+        }
+
         virtual string NodeType() { return string("varref"); }
         virtual void Visit(cVisitor *visitor) { visitor->Visit(this); }
 };

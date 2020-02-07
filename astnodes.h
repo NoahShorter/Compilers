@@ -37,3 +37,7 @@
 #include "cProcCallNode.h"
 #include "cFuncDeclNode.h"
 #include "cFuncExprNode.h"
+#include "cRecordDeclNode.h"
+#include "cArrayDeclNode.h"
+#include "cRangeDeclNode.h"
+#include "cConstDeclNode.h"
