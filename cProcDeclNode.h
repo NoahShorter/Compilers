@@ -41,6 +41,11 @@ class cProcDeclNode : public cDeclNode
             AddChild(vardecls);
             AddChild(block);
         }
+
+        void AddParam(cDeclsNode *vardecls)
+        {
+            AddChild(vardecls);
+        }
         
         virtual string NodeType() { return string("proc"); }
         virtual void Visit(cVisitor *visitor) { visitor->Visit(this); }

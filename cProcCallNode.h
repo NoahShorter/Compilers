@@ -17,7 +17,8 @@ class cProcCallNode : public cStmtNode
 {
     public:
         // param is the block that makes up the program
-        cProcCallNode(cSymbol *name, cExprListNode *args = nullptr) : cStmtNode()
+        cProcCallNode(cSymbol *name, cExprListNode *args = nullptr) 
+            : cStmtNode()
         {
             AddChild(name);
             AddChild(args);

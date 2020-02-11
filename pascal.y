@@ -153,7 +153,10 @@ constdecl: constdecl ';' IDENTIFIER '=' constant
                                     $$->AddDecl(new cConstDeclNode($3, $5));
                                 }
         |  IDENTIFIER '=' constant 
-                                { $$ = new cDeclsNode(new cConstDeclNode($1, $3)); }
+                                { 
+                                    $$ = new cDeclsNode(
+                                        new cConstDeclNode($1, $3)); 
+                                }
 typedecls: TYPE typedecl
                                 { $$ = $2; }
         | /*empty */
@@ -215,7 +218,11 @@ procdecl: procHeader paramSpec ';' block ';'
                                     $$ = $1;
                                 }
         |  procHeader paramSpec ';' FORWARD ';'
-                                { }
+                                { 
+                                    $1->AddParam($2);
+                                    g_symbolTable.DecreaseScope();
+                                    $$ = $1;
+                                }
         |  funcProto ';' block ';'
                                 { 
                                     $1->AddBlock($3); 

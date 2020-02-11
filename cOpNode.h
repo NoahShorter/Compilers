@@ -52,10 +52,10 @@ class cOpNode : public cAstNode
                     result += "NE";
                     break;
                 case '<':
-                    result += "LE";
+                    result += "LT";
                     break;
                 case '>':
-                    result += "GE";
+                    result += "GT";
                     break;
                 default:
                     result += (char)m_op;
