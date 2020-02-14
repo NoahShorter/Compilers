@@ -34,7 +34,7 @@ class cSymbolTable
         cSymbol * Insert(cSymbol * symbol);
 
         cSymbol * GlobalLookup(string str);
-        cSymbol * Lookup(string str);
+        cSymbol * LocalLookup(string str);
 
         void InitTable();
     private:

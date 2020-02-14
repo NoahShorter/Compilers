@@ -138,6 +138,7 @@ class cAstNode
             m_hasSemanticError = true;
         }
 
+
         void VisitAllChildren(cVisitor* visitor)
         {
             for (auto it=m_children.begin(); it<m_children.end(); it++)
@@ -178,4 +179,3 @@ class cAstNode
                                             // node was created
         bool m_hasSemanticError;
 };
-

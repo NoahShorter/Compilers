@@ -32,6 +32,7 @@ class cConstDeclNode : public cDeclNode
                 g_symbolTable.Insert(token);
             }
 
+            token->SetDecl(this);
             AddChild(token);
             AddChild(value);
         }

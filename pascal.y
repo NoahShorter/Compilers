@@ -12,6 +12,14 @@
 #include "lex.h"
 #include "astnodes.h"
 
+static bool g_semanticErrorHappened;
+
+#define CHECK_ERROR() { if (g_semanticErrorHappened) \
+    { g_semanticErrorHappened = false; } }
+#define PROP_ERROR() { if (g_semanticErrorHappened) \
+    { g_semanticErrorHappened = false; YYERROR; } }
+
+
 %}
 
 %locations
@@ -196,7 +204,10 @@ vardecl: vardecl onevar
                                     $$->AddVarDecls($2);
                                 }
         | onevar
-                                { $$ = new cVarDeclsNode($1); }
+                                { 
+                                    $$ = new cVarDeclsNode($1); 
+                                    CHECK_ERROR();
+                                }
 onevar: goodvar ';'
                                 { $$ = $1; }
         | error ';'
@@ -231,6 +242,7 @@ procdecl: procHeader paramSpec ';' block ';'
                                 }
         |  funcProto ';' FORWARD ';'
                                 { 
+                                    $1->AddBlock(nullptr); 
                                     g_symbolTable.DecreaseScope();
                                     $$ = $1;
                                 }
@@ -247,9 +259,13 @@ funcHeader: FUNCTION IDENTIFIER
                                 { 
                                     $$ = new cFuncDeclNode($2); 
                                     g_symbolTable.IncreaseScope();
+                                    CHECK_ERROR();
                                 }
 funcProto: funcHeader paramSpec ':' type
-                                { $$->AddParamType($4, $2); }
+                                { 
+                                    $$->AddParamType($4, $2);
+                                    CHECK_ERROR(); 
+                                }
 paramSpec: '(' parlist ')'
                                 { $$ = $2; }
         | /* empty */
@@ -420,4 +436,13 @@ int yyerror(const char *msg)
         << yytext << " on line " << yylineno << "\n";
 
     return 0;
+}
+
+// Function that gets called when a semantic error happens
+void SemanticParseError(std::string error)
+{
+    std::cout << "ERROR: " << error << " on line " 
+              << yylineno << "\n";
+    g_semanticErrorHappened = true;
+    yynerrs++;
 }

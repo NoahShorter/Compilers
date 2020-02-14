@@ -77,14 +77,15 @@ int Return(int val)
 
 char * TooLower(char * str)
 {
-    if(str != NULL)
+    char * strcpy = str;
+    if(strcpy != NULL)
     {
-        for(int i = 0; i < strlen(str); ++i)
+        for(int i = 0; i < strlen(strcpy); ++i)
         {
-            str[i] = tolower(str[i]);
+            strcpy[i] = tolower(strcpy[i]);
         }
     }
-    return str;
+    return strcpy;
 }
 
 int ProccessIdentifier(char * token)

@@ -27,5 +27,10 @@ class cBinaryExprNode : public cExprNode
         }
         virtual void Visit(cVisitor *visitor) { visitor->Visit(this); }
         virtual string NodeType() { return string("expr"); }
+
+        cDeclNode *GetType()
+        {
+            return nullptr;
+        }
     protected:
 };

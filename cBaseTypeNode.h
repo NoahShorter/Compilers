@@ -29,6 +29,11 @@ class cBaseTypeNode : public cDeclNode
                     " isFloat=\"" + std::to_string(m_isFloat) + "\"";
         }
 
+        string GetType()
+        {
+            return m_name;
+        }
+
         virtual string NodeType() { return string("type"); }
         virtual void Visit(cVisitor *visitor) { visitor->Visit(this); }
     protected:

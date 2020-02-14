@@ -20,20 +20,32 @@ class cVarDeclNode : public cDeclNode
         // param is the first decl in this decls
         cVarDeclNode(cDeclNode * type, cSymbol * id) : cDeclNode()
         {
-            cSymbol *token = g_symbolTable.GlobalLookup(id->GetName());
-            if (token == nullptr)
+            cSymbol *name = g_symbolTable.GlobalLookup(id->GetName());
+            if (name == nullptr)
             {
-                token = id;
+                name = id;
                 g_symbolTable.Insert(id);
             }
             else
             {
-                token = new cSymbol(id->GetName());
-                g_symbolTable.Insert(token);
+                cSymbol * sym = g_symbolTable.LocalLookup(id->GetName());
+                if (sym == nullptr)
+                {
+                    name = new cSymbol(id->GetName());
+                    g_symbolTable.Insert(name);
+                }
+                else
+                {
+                    SemanticParseError(
+                        "Symbol " + sym->GetName() + 
+                        " already exists in current scope");
+                }
+                
             }
 
+            name->SetDecl(this);
             AddChild(type);
-            AddChild(token);
+            AddChild(name);
         }
 
         virtual string NodeType() { return string("var_decl"); }

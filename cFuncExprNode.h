@@ -24,4 +24,13 @@ class cFuncExprNode : public cExprNode
         }
         virtual string NodeType() { return string("funcCall"); }
         virtual void Visit(cVisitor *visitor) { visitor->Visit(this); }
+
+        cDeclNode *GetType()
+        {
+            cSymbol * funcNameSym = dynamic_cast<cSymbol *>(GetChild(0));
+            cFuncDeclNode * returnDecl = 
+                dynamic_cast<cFuncDeclNode *>(funcNameSym->GetDecl());
+            cSymbol * returnSym = returnDecl->GetReturnType();
+            return returnSym->GetDecl();
+        }
 };

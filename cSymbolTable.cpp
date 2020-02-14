@@ -50,7 +50,7 @@ cSymbol * cSymbolTable::GlobalLookup(string str)
 }
 
 // Only looks up current scope
-cSymbol * cSymbolTable::Lookup(string str)
+cSymbol * cSymbolTable::LocalLookup(string str)
 {
 
     auto got = SymbolTable.back().find (str);
