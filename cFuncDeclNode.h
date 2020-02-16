@@ -39,17 +39,23 @@ class cFuncDeclNode : public cDeclNode
                     g_symbolTable.Insert(token);
                     AddChild(token);
                 }
-                else if (!sym->GetDecl()->IsFunc())
+                else 
                 {
-                    token->SetDecl(this);
-                    SemanticParseError(
-                            "Symbol " + sym->GetName() + 
-                            " already exists in current scope");
-                }
-                else
-                {
-                    token = sym;
-                    AddChild(token);
+                    if (!sym->GetDecl()->IsFunc())
+                    {
+                        token->SetDecl(this);
+                        AddChild(token);
+                        SemanticParseError(
+                                "Symbol " + sym->GetName() + 
+                                " already exists in current scope");
+                    }
+                    else
+                    {
+                        // updating a forward decls
+                        token = sym;
+                        token->SetDecl(sym->GetDecl());
+                        AddChild(token);
+                    }
                 }
                 //sym = token;
                 //sym->SetDecl(token->GetDecl());
@@ -66,13 +72,22 @@ class cFuncDeclNode : public cDeclNode
 
             cFuncDeclNode * decl = 
                 dynamic_cast<cFuncDeclNode *>(name->GetDecl());
-            cSymbol * returnType = dynamic_cast<cSymbol *>(decl->GetChild(1));
+            cDeclNode * returnType = dynamic_cast<cDeclNode *>(decl->GetChild(1));
+            cDeclsNode * params = dynamic_cast<cDeclsNode *>(decl->GetChild(2));
+
             if(returnType != nullptr && 
-                returnType->GetName() != type->GetName())
+                returnType != type->GetDecl())
             {
                 SemanticParseError( 
                     name->GetName() +
-                    " previously declared with different return type");
+                    " previsously declared with different return type");
+            }
+            if(params != nullptr && 
+                params->NumDecls() != vardecls->NumDecls())
+            {
+                SemanticParseError( 
+                    name->GetName() +
+                    " redeclared with different number of parameters");
             }
 
             AddChild(type->GetDecl());
@@ -81,7 +96,31 @@ class cFuncDeclNode : public cDeclNode
 
         void AddBlock(cBlockNode *block)
         {
-            AddChild(block);
+            cSymbol * name = dynamic_cast<cSymbol *>(GetChild(0));
+            cFuncDeclNode * decl = 
+                dynamic_cast<cFuncDeclNode *>(name->GetDecl());
+
+            if(decl->NumChildren() == 4)
+            {
+                cBlockNode * funcBlock = 
+                    dynamic_cast<cBlockNode *>(decl->GetChild(3));
+
+                if(funcBlock != nullptr)
+                {
+                    SemanticParseError( 
+                        name->GetName() +
+                        " already has a definition");
+                }
+                else
+                {
+                    name->SetDecl(this);
+                    AddChild(block);
+                }
+            }
+            else
+            {
+                decl->AddChild(block);
+            }
         }
 
         cSymbol * GetReturnType()

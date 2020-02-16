@@ -37,6 +37,11 @@ class cDeclsNode : public cAstNode
             if(decl != nullptr) AddChild(decl); 
         }
 
+        int NumDecls()
+        {
+            return NumChildren();
+        }
+
         virtual string NodeType() { return string("decls"); }
         virtual void Visit(cVisitor *visitor) { visitor->Visit(this); }
 };
