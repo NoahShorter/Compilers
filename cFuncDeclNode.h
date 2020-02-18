@@ -100,18 +100,18 @@ class cFuncDeclNode : public cDeclNode
             cFuncDeclNode * decl = 
                 dynamic_cast<cFuncDeclNode *>(name->GetDecl());
 
-            if(decl->NumChildren() == 4)
-            {
-                cBlockNode * funcBlock = 
+            cBlockNode * funcBlock = 
                     dynamic_cast<cBlockNode *>(decl->GetChild(3));
 
-                if(funcBlock != nullptr)
+            if(decl->NumChildren() == 4)
+            {
+                if(funcBlock != nullptr && block != nullptr)
                 {
                     SemanticParseError( 
                         name->GetName() +
                         " already has a definition");
                 }
-                else
+                else if(block != nullptr)
                 {
                     name->SetDecl(this);
                     AddChild(block);
