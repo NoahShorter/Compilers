@@ -26,6 +26,11 @@ class cExprListNode : public cAstNode
             if (param != nullptr) AddChild(param);
         }
 
+        int NumExpr()
+        {
+            return this->NumChildren();
+        }
+
         virtual string NodeType() { return string("exprList"); }
         virtual void Visit(cVisitor *visitor) { visitor->Visit(this); }
 };

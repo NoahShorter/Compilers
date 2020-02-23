@@ -13,7 +13,7 @@
 void cVisitor::Visit(cArrayDeclNode *node)    { node->VisitAllChildren(this); }
 void cVisitor::Visit(cAssignNode *node)       { node->VisitAllChildren(this); }
 void cVisitor::Visit(cAstNode *node)          { node->VisitAllChildren(this); }
-void cVisitor::Visit(cBaseTypeNode *node) { node->VisitAllChildren(this); }
+void cVisitor::Visit(cBaseTypeNode *node)     { node->VisitAllChildren(this); }
 void cVisitor::Visit(cBinaryExprNode *node)   { node->VisitAllChildren(this); }
 void cVisitor::Visit(cBlockNode *node)        { node->VisitAllChildren(this); }
 void cVisitor::Visit(cCompoundStmtNode *node) { node->VisitAllChildren(this); }
@@ -27,7 +27,7 @@ void cVisitor::Visit(cFuncExprNode *node)     { node->VisitAllChildren(this); }
 void cVisitor::Visit(cIdListNode *node)       { node->VisitAllChildren(this); }
 void cVisitor::Visit(cIfNode *node)           { node->VisitAllChildren(this); }
 void cVisitor::Visit(cIntExprNode *node)      { node->VisitAllChildren(this); }
-void cVisitor::Visit(cNilNode *node)         { node->VisitAllChildren(this); }
+void cVisitor::Visit(cNilNode *node)          { node->VisitAllChildren(this); }
 void cVisitor::Visit(cOpNode *node)           { node->VisitAllChildren(this); }
 void cVisitor::Visit(cProcCallNode *node)     { node->VisitAllChildren(this); }
 void cVisitor::Visit(cProcDeclNode *node)     { node->VisitAllChildren(this); }

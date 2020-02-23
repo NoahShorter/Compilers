@@ -26,6 +26,16 @@ class cAssignNode : public cStmtNode
             AddChild(expr);
         }
 
+        cVarExprNode * GetLval()
+        {
+            return dynamic_cast<cVarExprNode *>(GetChild(0));
+        }
+
+        cExprNode * GetExpr()
+        {
+            return dynamic_cast<cExprNode *>(GetChild(1));
+        }
+
         virtual string NodeType() { return string("assign"); }
         virtual void Visit(cVisitor *visitor) { visitor->Visit(this); }
 };

@@ -99,7 +99,7 @@ static bool g_semanticErrorHappened;
 %type <decls_node> vardecls
 %type <vardecls_node> vardecl;
 %type <decls_node> procdecls
-%type <decls_node> paramSpec
+%type <vardecls_node> paramSpec
 %type <decl_node> procdecl
 %type <vardecls_node> parlist
 %type <ids_node> idlist
@@ -421,7 +421,7 @@ fact:        '(' expr ')'
         |   REAL_VAL
                                 { $$ = new cRealExprNode($1); }
         |   variable
-                                { }
+                                { $$ = $1; }
         |   func_call
                                 { $$ = $1; }
         |   NOT fact

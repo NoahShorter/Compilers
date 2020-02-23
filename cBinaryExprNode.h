@@ -30,7 +30,34 @@ class cBinaryExprNode : public cExprNode
 
         cDeclNode *GetType()
         {
-            return nullptr;
+            cExprNode * left = dynamic_cast<cExprNode *>(GetChild(0));
+            cExprNode * right = dynamic_cast<cExprNode *>(GetChild(2));
+            cDeclNode * leftType = nullptr;
+            cDeclNode * rightType = nullptr;
+
+            if (left != nullptr && right != nullptr)
+            {
+                leftType = left->GetType();
+                rightType = right->GetType();
+            }
+
+            if(leftType != nullptr && rightType != nullptr)
+            {
+                if(leftType->IsReal())
+                    return leftType;
+                else if (rightType->IsReal())
+                    return rightType;
+                else if (leftType->IsInt())
+                    return leftType;
+                else if (rightType->IsInt())
+                    return rightType;
+                else
+                    return leftType;
+            }
+            else
+            {
+                return nullptr;
+            }
         }
     protected:
 };

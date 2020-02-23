@@ -34,6 +34,11 @@ class cVarExprNode : public cExprNode
             AddChild(exprList);
         }
 
+        cSymbol * GetSymbol()
+        {
+            return dynamic_cast<cSymbol *>(GetChild(0));
+        }
+
         virtual string NodeType() { return string("varref"); }
         virtual void Visit(cVisitor *visitor) { visitor->Visit(this); }
 

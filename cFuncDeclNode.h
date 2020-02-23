@@ -65,7 +65,7 @@ class cFuncDeclNode : public cDeclNode
 
         }
 
-        void AddParamType(cSymbol *type, cDeclsNode *vardecls = nullptr)
+        void AddParamType(cSymbol *type, cVarDeclsNode *vardecls = nullptr)
         {
             cSymbol * name = dynamic_cast<cSymbol *>(GetChild(0));
             //cSymbol * oldOne = g_symbolTable.GlobalLookup(name->GetName());
@@ -73,7 +73,7 @@ class cFuncDeclNode : public cDeclNode
             cFuncDeclNode * decl = 
                 dynamic_cast<cFuncDeclNode *>(name->GetDecl());
             cDeclNode * returnType = dynamic_cast<cDeclNode *>(decl->GetChild(1));
-            cDeclsNode * params = dynamic_cast<cDeclsNode *>(decl->GetChild(2));
+            cVarDeclsNode * params = dynamic_cast<cVarDeclsNode *>(decl->GetChild(2));
 
             if(returnType != nullptr && 
                 returnType != type->GetDecl())
@@ -82,7 +82,7 @@ class cFuncDeclNode : public cDeclNode
                     name->GetName() +
                     " previsously declared with different return type");
             }
-            if(params != nullptr && 
+            if(params != nullptr && vardecls != nullptr &&
                 params->NumDecls() != vardecls->NumDecls())
             {
                 SemanticParseError( 
@@ -130,8 +130,13 @@ class cFuncDeclNode : public cDeclNode
 
         bool HasBlock()
         {
-            return dynamic_cast<cBlockNode *>(GetChild(3))
-                         == nullptr ? true : false;
+            return !(dynamic_cast<cBlockNode *>(GetChild(3))
+                         == nullptr) ? true : false;
+        }
+
+        cVarDeclsNode * GetParams()
+        {
+            return dynamic_cast<cVarDeclsNode *>(GetChild(2));
         }
 
         bool IsFunc()

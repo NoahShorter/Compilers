@@ -34,6 +34,21 @@ class cBaseTypeNode : public cDeclNode
             return m_name;
         }
 
+        bool IsReal()
+        {
+            return m_isFloat;
+        }
+
+        bool IsChar()
+        {
+            return m_name == "char";
+        }
+
+        bool IsInt()
+        {
+            return m_name == "integer";
+        }
+
         virtual string NodeType() { return string("type"); }
         virtual void Visit(cVisitor *visitor) { visitor->Visit(this); }
     protected:

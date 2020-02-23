@@ -48,6 +48,8 @@ class cSymbol : public cAstNode
         string GetName() { return m_name; }
         int GetType() { return m_tokenType; }
 
+        int GetId() {return m_id; }
+
         bool IsType() { return m_isType; }
         void SetIsType(bool isType) { m_isType = isType; } 
 
