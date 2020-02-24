@@ -44,6 +44,18 @@ class cVarDeclsNode : public cDeclsNode
                 AddAllChildren(vardecls);
         }
 
+        cVarDeclNode * GetParam(int index)
+        {
+            return dynamic_cast<cVarDeclNode *>(GetChild(index));
+        }
+
+        cDeclNode * GetType()
+        {
+            cVarDeclNode * vardecl = 
+                dynamic_cast<cVarDeclNode *>(GetChild(0));
+            return vardecl->GetDeclType();
+        }
+
         virtual string NodeType() { return string("var_decls"); }
         virtual void Visit(cVisitor *visitor) { visitor->Visit(this); }
 };

@@ -37,6 +37,17 @@ class cConstDeclNode : public cDeclNode
             AddChild(value);
         }
 
+        cDeclNode * GetDeclType()
+        {
+            cSymbol * sym = g_symbolTable.GlobalLookup("integer");
+            return sym->GetDecl();
+        }
+
+        string GetName()
+        {
+            return GetDeclType()->GetName();
+        }
+
         virtual string NodeType() { return string("const_decl"); }
         virtual void Visit(cVisitor *visitor) { visitor->Visit(this); }
 };

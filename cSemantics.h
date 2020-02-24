@@ -26,27 +26,54 @@ class cSemantics : public cVisitor
         void Visit(cFuncExprNode *node)
         { 
             cSymbol * funcName = node->GetName();
-            cFuncDeclNode * nameDecl = dynamic_cast<cFuncDeclNode *>(funcName->GetDecl());
+            cFuncDeclNode * nameDecl = 
+                dynamic_cast<cFuncDeclNode *>(funcName->GetDecl());
 
             if (nameDecl == nullptr)
             {
                 if (funcName->GetDecl())
                 {
-                    node->SemanticError(funcName->GetName() +" is not a function");
+                    node->SemanticError(
+                        funcName->GetName() +" is not a function");
                 }
                 else
                 {
-                    node->SemanticError(funcName->GetName() +" is not declared");
+                    node->SemanticError(
+                        funcName->GetName() +" is not declared");
                 }
             }
             else if (!nameDecl->HasBlock())
             {
-                node->SemanticError(funcName->GetName() +" is not fully defined");
+                node->SemanticError(
+                    funcName->GetName() +" is not fully defined");
             }
             if (nameDecl != nullptr && node != nullptr)
             {
-                if (nameDecl->GetParams()->NumDecls() != node->GetParams()->NumExpr())
-                    node->SemanticError(funcName->GetName() +" called with wrong number of arguments");
+                cVarDeclsNode * params = nameDecl->GetParams();
+                cExprListNode * callParams = node->GetParams();
+                if(params != nullptr && callParams != nullptr)
+                {
+                    if (params->NumDecls() != callParams->NumExpr())
+                        node->SemanticError(
+                            funcName->GetName() +
+                            " called with wrong number of arguments");
+                    else
+                    {
+                        for(int ii = 0; ii < params->NumDecls(); ++ii)
+                        {
+                            cDeclNode * lval = params->GetParam(ii)->GetDeclType();
+                            cDeclNode * rval = callParams->GetExpr(ii)->GetType();
+                            if(!lval->IsCompatable(rval))
+                            {
+                                node->SemanticError(
+                                    "Cannot assign " +
+                                    rval->GetName() +
+                                    " to " +
+                                    lval->GetName());
+                            }
+                        }
+                    }
+                }
             }
 
         }
@@ -56,25 +83,83 @@ class cSemantics : public cVisitor
             if(node != nullptr && !(node->GetType()))
             {
                 node->SemanticError(
-                    "Variable " + node->GetSymbol()->GetName() + " is not defined");
+                    "Variable " + 
+                    node->GetSymbol()->GetName() + 
+                    " is not defined");
+            }
+            else if(node != nullptr && node->HasIndex())
+            {
+                if(!node->GetType()->IsType())
+                {
+                    node->SemanticError(
+                        node->GetSymbol()->GetName() + 
+                        " is not an array");
+                }
+                else
+                {
+                    cArrayDeclNode * var = 
+                        dynamic_cast<cArrayDeclNode *>(node->GetType());
+                    
+                    cExprListNode * indexes = node->GetIndexes();
+
+                    for(int ii = 0; ii < node->NumIndexes(); ++ii)
+                    {
+                        cExprNode * index = indexes->GetExpr(ii);
+                        if(!index->GetType()->IsInt() &&
+                            !index->GetType()->IsChar())
+                        {
+                            node->SemanticError(
+                                "Index of " +
+                                node->GetSymbol()->GetName() + 
+                                " is not an integer");
+                        }
+                    }
+
+                    if(node->NumIndexes() != var->NumIndexes())
+                    {
+                        node->SemanticError(
+                            node->GetSymbol()->GetName() + 
+                            " does not have the correct number of indexes");
+                    }
+                }
             }
         }
 
         void Visit(cAssignNode *node)
         {
             VisitAllNodes(node);
-            cVarExprNode * lvalExpr = node->GetLval();
-            cExprNode * rvalExpr = node->GetExpr();
-
-            if(lvalExpr != nullptr && rvalExpr != nullptr)
+            if(!node->HasSemanticError())
             {
-                cDeclNode * lval = lvalExpr->GetType();
-                cDeclNode * rval = rvalExpr->GetType();
-                /*if(lval != rval)
+                cVarExprNode * lvalExpr = node->GetLval();
+                cExprNode * rvalExpr = node->GetExpr();
+
+                if(lvalExpr != nullptr && rvalExpr != nullptr)
                 {
-                    node->SemanticError(
-                        "Variable  is not defined");
-                }*/
+                    cDeclNode * lval = lvalExpr->GetType();
+                    if(lvalExpr->HasIndex())
+                        lval = lval->GetIndexType();
+                    else
+                        lval = lval->GetDeclType();
+
+                    cDeclNode * rval = rvalExpr->GetType();
+                    if (rval != nullptr)
+                    {    
+                        if (rvalExpr->HasIndex())
+                            rval = rval->GetIndexType();
+                        else
+                            rval = rval->GetDeclType();
+                    }
+
+
+                    if(!lval->IsCompatable(rval))
+                    {
+                        node->SemanticError(
+                            "Cannot assign " +
+                            rval->GetName() +
+                            " to " +
+                            lval->GetName());
+                    }
+                }
             }
         }
 

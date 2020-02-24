@@ -34,6 +34,11 @@ class cBaseTypeNode : public cDeclNode
             return m_name;
         }
 
+        string GetName()
+        {
+            return m_name;
+        }
+
         bool IsReal()
         {
             return m_isFloat;
@@ -47,6 +52,11 @@ class cBaseTypeNode : public cDeclNode
         bool IsInt()
         {
             return m_name == "integer";
+        }
+
+        cDeclNode * GetDeclType()
+        {
+            return this;
         }
 
         virtual string NodeType() { return string("type"); }

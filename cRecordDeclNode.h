@@ -28,6 +28,18 @@ class cRecordDeclNode : public cDeclNode
             AddChild(vardecls);
         }
 
+        cDeclNode * GetDeclType()
+        {
+            cVarDeclsNode * vardecls = 
+                dynamic_cast<cVarDeclsNode *>(GetChild(1));
+            return vardecls->GetType();
+        }
+
+        string GetName()
+        {
+            return "record";
+        }
+
         virtual string NodeType() { return string("record"); }
         virtual void Visit(cVisitor *visitor) { visitor->Visit(this); }
 };

@@ -19,4 +19,6 @@ class cExprNode : public cStmtNode
         cExprNode() : cStmtNode() {}
 
         virtual cDeclNode *GetType() = 0;
+
+        virtual bool HasIndex() { return false; }
 };

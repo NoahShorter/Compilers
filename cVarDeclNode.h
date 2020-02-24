@@ -48,6 +48,16 @@ class cVarDeclNode : public cDeclNode
             AddChild(name);
         }
 
+        cDeclNode * GetDeclType()
+        {
+            return dynamic_cast<cDeclNode *>(GetChild(0));
+        }
+
+        string GetName()
+        {
+            return GetDeclType()->GetName();
+        }
+
         virtual string NodeType() { return string("var_decl"); }
         virtual void Visit(cVisitor *visitor) { visitor->Visit(this); }
 };

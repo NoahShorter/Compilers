@@ -123,11 +123,6 @@ class cFuncDeclNode : public cDeclNode
             }
         }
 
-        cSymbol * GetReturnType()
-        {
-            return dynamic_cast<cSymbol *>(GetChild(1));
-        }
-
         bool HasBlock()
         {
             return !(dynamic_cast<cBlockNode *>(GetChild(3))
@@ -137,6 +132,16 @@ class cFuncDeclNode : public cDeclNode
         cVarDeclsNode * GetParams()
         {
             return dynamic_cast<cVarDeclsNode *>(GetChild(2));
+        }
+
+        cDeclNode * GetDeclType()
+        {
+            return dynamic_cast<cDeclNode *>(GetChild(1));
+        }
+
+        string GetName()
+        {
+            return GetDeclType()->GetName();
         }
 
         bool IsFunc()

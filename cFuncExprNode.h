@@ -38,14 +38,14 @@ class cFuncExprNode : public cExprNode
         cDeclNode *GetType()
         {
             cSymbol * funcNameSym = dynamic_cast<cSymbol *>(GetChild(0));
-            cSymbol * returnSym = nullptr;
+            cDeclNode * returnDeclType = nullptr;
             if(funcNameSym != nullptr)
             {
                 cFuncDeclNode * returnDecl = 
                     dynamic_cast<cFuncDeclNode *>(funcNameSym->GetDecl());
                 if(returnDecl != nullptr)
-                    returnSym = returnDecl->GetReturnType();
+                    returnDeclType = returnDecl->GetDeclType();
             }
-            return returnSym != nullptr ? returnSym->GetDecl() : nullptr;
+            return returnDeclType;
         }
 };

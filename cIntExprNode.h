@@ -32,8 +32,16 @@ class cIntExprNode : public cExprNode
 
         cDeclNode *GetType()
         {
-            cSymbol * intSym = g_symbolTable.GlobalLookup("integer");
-            return intSym->GetDecl();
+            if (m_value > -128 && m_value < 127)
+            {
+                cSymbol * intSym = g_symbolTable.GlobalLookup("char");
+                return intSym->GetDecl();
+            }
+            else
+            {
+                cSymbol * intSym = g_symbolTable.GlobalLookup("integer");
+                return intSym->GetDecl();
+            }
         }
 
     protected:

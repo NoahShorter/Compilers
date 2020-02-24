@@ -31,6 +31,11 @@ class cExprListNode : public cAstNode
             return this->NumChildren();
         }
 
+        cExprNode * GetExpr(int index)
+        {
+            return dynamic_cast<cExprNode *>(GetChild(index));
+        }
+
         virtual string NodeType() { return string("exprList"); }
         virtual void Visit(cVisitor *visitor) { visitor->Visit(this); }
 };

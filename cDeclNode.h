@@ -22,4 +22,31 @@ class cDeclNode : public cAstNode
         virtual bool IsType()  { return false; }
         virtual bool IsFunc()  { return false; }
 
+        virtual cDeclNode * GetDeclType() = 0;
+        virtual cDeclNode * GetIndexType() { return nullptr; }
+
+        virtual string GetName() = 0;
+
+        bool IsCompatable(cDeclNode * rval)
+        {
+            bool returnType = false;
+
+            if (this->IsReal())
+                returnType = true;
+            else if (this->IsInt())
+            {
+                if(!rval->IsType() && !rval->IsReal())
+                    returnType = true;
+            }
+            else if (this->IsChar())
+            {
+                if(!rval->IsType() && rval->IsChar())
+                    returnType = true;
+            }
+            else if (this == rval)
+                returnType = true;
+
+            return returnType;
+        }
+
 };

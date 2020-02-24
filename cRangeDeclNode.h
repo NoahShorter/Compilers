@@ -33,6 +33,16 @@ class cRangeDeclNode : public cDeclNode
             return result;
         }
 
+        cDeclNode * GetDeclType()
+        {
+            return nullptr;
+        }
+
+        string GetName()
+        {
+            return "range";
+        }
+
         virtual string NodeType() { return string("range"); }
         virtual void Visit(cVisitor *visitor) { visitor->Visit(this); }
 

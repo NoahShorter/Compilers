@@ -39,12 +39,33 @@ class cVarExprNode : public cExprNode
             return dynamic_cast<cSymbol *>(GetChild(0));
         }
 
+        bool HasIndex()
+        {
+            return NumChildren() > 1;
+        }
+
+        int NumIndexes()
+        {
+            cExprListNode * exprList = dynamic_cast<cExprListNode *>(GetChild(1));
+            if(exprList != nullptr)
+            {
+                return exprList->NumExpr();
+            }
+            return 0;
+        }
+
+        cExprListNode * GetIndexes()
+        {
+            return dynamic_cast<cExprListNode *>(GetChild(1));
+        }
+
         virtual string NodeType() { return string("varref"); }
         virtual void Visit(cVisitor *visitor) { visitor->Visit(this); }
 
         cDeclNode *GetType()
         {
             cSymbol * varSym = dynamic_cast<cSymbol *>(GetChild(0));
-            return varSym->GetDecl();
+            cDeclNode * varDecl = varSym->GetDecl();
+            return varDecl == nullptr ? nullptr : varDecl->GetDeclType();
         }
 };
