@@ -31,7 +31,7 @@ class cAstNode
     public:
         //*************************************
         // Constructor
-        cAstNode() : m_LineNum(yylineno) {}
+        cAstNode() : m_LineNum(yylineno), m_hasSemanticError(false) {}
 
     protected:
         //*************************************

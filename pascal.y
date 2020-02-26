@@ -127,14 +127,19 @@ program: header block '.'
                                       YYACCEPT;
                                   else
                                       YYABORT;
+                                  CHECK_ERROR();
                                 }
 header: PROGRAM IDENTIFIER ';'
                                 { 
                                    g_symbolTable.IncreaseScope();
-                                   $$ = $2; 
+                                   $$ = $2;
+                                   CHECK_ERROR(); 
                                 }
 block:  decls OPEN statements CLOSE
-                                { $$ = new cBlockNode($1, $3); }
+                                { 
+                                    $$ = new cBlockNode($1, $3);
+                                    CHECK_ERROR(); 
+                                }
 
 decls: constdecls typedecls vardecls procdecls
                                 { 
@@ -150,6 +155,7 @@ decls: constdecls typedecls vardecls procdecls
                                     }
                                     else
                                         $$ = nullptr;
+                                    CHECK_ERROR();
                                 }
 constdecls: CONST constdecl ';'
                                 { $$ = $2; }
@@ -159,11 +165,13 @@ constdecl: constdecl ';' IDENTIFIER '=' constant
                                 {
                                     $$ = $1;
                                     $$->AddDecl(new cConstDeclNode($3, $5));
+                                    CHECK_ERROR();
                                 }
         |  IDENTIFIER '=' constant 
                                 { 
                                     $$ = new cDeclsNode(
-                                        new cConstDeclNode($1, $3)); 
+                                        new cConstDeclNode($1, $3));
+                                    CHECK_ERROR(); 
                                 }
 typedecls: TYPE typedecl
                                 { $$ = $2; }
@@ -173,26 +181,41 @@ typedecl: typedecl singleType
                                 { 
                                     $$ = $1;
                                     $$->AddDecl($2);
+                                    CHECK_ERROR();
                                 }
         |  singleType
-                                { $$ = new cDeclsNode($1); }
+                                { 
+                                    $$ = new cDeclsNode($1);
+                                    CHECK_ERROR(); 
+                                }
         |  error ';'
                                 {}
 singleType:  IDENTIFIER '=' recHeader recorddef ';'
                                 { 
                                     $$ = new cRecordDeclNode($1, $4);
+                                    CHECK_ERROR();
                                 }
         | IDENTIFIER '=' ARRAY '[' rangeList ']' OF type ';'
-                                { $$ = new cArrayDeclNode($1, $8, $5); }
+                                { 
+                                    $$ = new cArrayDeclNode($1, $8, $5);
+                                    CHECK_ERROR(); 
+                                }
 rangeList: rangeList ',' range
                                 { 
                                     $$ = $1;
                                     $$->AddDecl($3);
+                                    CHECK_ERROR();
                                 }
         |  range
-                                { $$ = new cDeclsNode($1); }
+                                { 
+                                    $$ = new cDeclsNode($1);
+                                    CHECK_ERROR(); 
+                                }
 range: INT_VAL '.' '.' INT_VAL
-                                { $$ = new cRangeDeclNode($1, $4); }
+                                { 
+                                    $$ = new cRangeDeclNode($1, $4);
+                                    CHECK_ERROR(); 
+                                }
 
 vardecls: VAR vardecl
                                 { $$ = $2; }
@@ -202,6 +225,7 @@ vardecl: vardecl onevar
                                 { 
                                     $$ = $1;
                                     $$->AddVarDecls($2);
+                                    CHECK_ERROR();
                                 }
         | onevar
                                 { 
@@ -209,15 +233,22 @@ vardecl: vardecl onevar
                                     CHECK_ERROR();
                                 }
 onevar: goodvar ';'
-                                { $$ = $1; }
+                                { 
+                                    $$ = $1;
+                                    CHECK_ERROR(); 
+                                }
         | error ';'
                                 { }
 goodvar: idlist ':' type
-                                { $$ = new cVarDeclsNode($3, $1); }
+                                { 
+                                    $$ = new cVarDeclsNode($3, $1);
+                                    CHECK_ERROR(); 
+                                }
 procdecls: procdecls procdecl
                                 { 
                                     $$ = new cDeclsNode($1);
                                     $$->AddDecl($2);
+                                    CHECK_ERROR();
                                 }
         | /* empty */
                                 { $$ = nullptr; }
@@ -227,24 +258,28 @@ procdecl: procHeader paramSpec ';' block ';'
                                     $1->AddParamBlock($4, $2);
                                     g_symbolTable.DecreaseScope();
                                     $$ = $1;
+                                    CHECK_ERROR();
                                 }
         |  procHeader paramSpec ';' FORWARD ';'
                                 { 
                                     $1->AddParam($2);
                                     g_symbolTable.DecreaseScope();
                                     $$ = $1;
+                                    CHECK_ERROR();
                                 }
         |  funcProto ';' block ';'
                                 { 
                                     $1->AddBlock($3); 
                                     g_symbolTable.DecreaseScope();
                                     $$ = $1;
+                                    CHECK_ERROR();
                                 }
         |  funcProto ';' FORWARD ';'
                                 { 
                                     $1->AddBlock(nullptr); 
                                     g_symbolTable.DecreaseScope();
                                     $$ = $1;
+                                    CHECK_ERROR();
                                 }
         |  error ';' block ';'
                                 { }
@@ -254,6 +289,7 @@ procHeader: PROCEDURE IDENTIFIER
                                 { 
                                     $$ = new cProcDeclNode($2);
                                     g_symbolTable.IncreaseScope();
+                                    CHECK_ERROR();
                                 }
 funcHeader: FUNCTION IDENTIFIER
                                 { 
@@ -275,24 +311,36 @@ idlist: idlist ',' IDENTIFIER
                                 { 
                                     $$ = $1;
                                     $$->AddId($3);
+                                    CHECK_ERROR();
                                 }
     |    IDENTIFIER
-                                { $$ = new cIdListNode($1); }
+                                { 
+                                    $$ = new cIdListNode($1);
+                                    CHECK_ERROR(); 
+                                }
 
 parlist: parlist ';' VAR idlist ':' type 
                                 { 
                                     $$ = $1;
                                     $$->AddVarDecls($6, $4);
+                                    CHECK_ERROR();
                                 }
     |    parlist ';' idlist ':' type 
                                 { 
                                     $$ = $1;
                                     $$->AddVarDecls($5, $3);
+                                    CHECK_ERROR();
                                 }
     |    VAR idlist ':' type
-                                { $$ = new cVarDeclsNode($4, $2);}
+                                { 
+                                    $$ = new cVarDeclsNode($4, $2);
+                                    CHECK_ERROR();
+                                }
     |    idlist ':' type
-                                { $$ = new cVarDeclsNode($3, $1);}
+                                { 
+                                    $$ = new cVarDeclsNode($3, $1);
+                                    CHECK_ERROR();
+                                }
 
 type: TYPE_ID
                                 { $$ = $1; }
@@ -304,128 +352,231 @@ recorddef: vardecl CLOSE
                                     g_symbolTable.DecreaseScope(); 
                                 }
 constant: INT_VAL
-                                { $$ = new cIntExprNode($1); }
+                                { 
+                                    $$ = new cIntExprNode($1);
+                                    CHECK_ERROR(); 
+                                }
     |   '-' INT_VAL
-                                { $$ = new cUnaryExprNode('-', 
-                                new cIntExprNode($2)); }
+                                { 
+                                    $$ = new cUnaryExprNode('-', 
+                                        new cIntExprNode($2));
+                                    CHECK_ERROR();
+                                }
 
 statements: statements statement
                                 { 
                                     $$ = $1;
                                     $$->AddStmt($2);
+                                    CHECK_ERROR();
                                 }
     |   statement
-                                { $$ = new cStmtsNode($1); }
+                                { 
+                                    $$ = new cStmtsNode($1);
+                                    CHECK_ERROR(); 
+                                }
 
 statement: variable ASSIGN expr ';'
-                                { $$ = new cAssignNode($1, $3); }
+                                { 
+                                    $$ = new cAssignNode($1, $3);
+                                    CHECK_ERROR(); 
+                                }
     |   IF expr THEN statement
-                                { $$ = new cIfNode($2, $4); }
+                                { 
+                                    $$ = new cIfNode($2, $4);
+                                    CHECK_ERROR(); 
+                                }
     |   IF expr THEN statement ELSE statement
-                                { $$ = new cIfNode($2, $4, $6); }
+                                { 
+                                    $$ = new cIfNode($2, $4, $6);
+                                    CHECK_ERROR(); 
+                                }
     |   REPEAT statements UNTIL expr ';'
                                 { }
     |   WHILE expr DO statement
-                                { $$ = new cWhileNode($2, $4); }
+                                { 
+                                    $$ = new cWhileNode($2, $4);
+                                    CHECK_ERROR(); 
+                                }
     |   FOR IDENTIFIER ASSIGN expr TO expr DO statement
                                 {}
     |   FOR IDENTIFIER ASSIGN expr DOWNTO expr DO statement
                                 {}
     |   IDENTIFIER '(' exprList ')' ';'
-                                { $$ = new cProcCallNode($1, $3); }
+                                { 
+                                    $$ = new cProcCallNode($1, $3);
+                                    CHECK_ERROR(); 
+                                }
     |   IDENTIFIER ';'
-                                { $$ = new cProcCallNode($1);}
+                                { 
+                                    $$ = new cProcCallNode($1);
+                                    CHECK_ERROR();
+                                }
     |   WRITE '(' exprList ')' ';'
-                                { $$ = new cWriteNode($3); }
+                                { 
+                                    $$ = new cWriteNode($3);
+                                    CHECK_ERROR();
+                                }
     |   OPEN statements CLOSE
-                                { $$ = new cCompoundStmtNode($2); }
+                                { 
+                                    $$ = new cCompoundStmtNode($2);
+                                    CHECK_ERROR(); 
+                                }
     |   NIL ';'
-                                { $$ = new cNilNode(); }
+                                { 
+                                    $$ = new cNilNode();
+                                    CHECK_ERROR(); 
+                                }
     |   error ';'
                                 { }
 
 exprList: exprList ',' oneExpr
                                 { 
                                     $$ = $1;
-                                    $$->AddExpr($3);    
+                                    $$->AddExpr($3);
+                                    CHECK_ERROR();
                                 }
         | oneExpr
-                                { $$ = new cExprListNode($1); }
+                                { 
+                                    $$ = new cExprListNode($1);
+                                    CHECK_ERROR(); 
+                                }
         | /* empty */
                                 { }
 oneExpr: expr
                                 { $$ = $1; }
 
 func_call:  IDENTIFIER '(' exprList ')'
-                                { $$ = new cFuncExprNode($1, $3); }
+                                { 
+                                    $$ = new cFuncExprNode($1, $3);
+                                    CHECK_ERROR(); 
+                                }
 
 variable: variable '.' varpart
                                 { 
                                     $$ = $1;
                                     $$->AddVar($3);
+                                    CHECK_ERROR();
                                 }
         | variable '[' exprList ']'
                                 { 
                                     $$ = $1;
                                     $$->AddVar($3);
+                                    CHECK_ERROR();
                                 }
         | varpart
-                                { $$ = new cVarExprNode($1); }
+                                { 
+                                    $$ = new cVarExprNode($1);
+                                    CHECK_ERROR(); 
+                                }
 
 varpart:  IDENTIFIER
                                 { $$ = $1; }
 
 expr:       expr '=' addit
-                                { $$ = new cBinaryExprNode($1, $3, '='); }
+                                { 
+                                    $$ = new cBinaryExprNode($1, $3, '='); 
+                                    CHECK_ERROR();
+                                }
         |   expr '>' addit
-                                { $$ = new cBinaryExprNode($1, $3, '>'); }
+                                { 
+                                    $$ = new cBinaryExprNode($1, $3, '>'); 
+                                    CHECK_ERROR();
+                                }
         |   expr '<' addit
-                                { $$ = new cBinaryExprNode($1, $3, '<'); }
+                                { 
+                                    $$ = new cBinaryExprNode($1, $3, '<'); 
+                                    CHECK_ERROR();
+                                }
         |   expr LE addit
-                                { $$ = new cBinaryExprNode($1, $3, LE); }
+                                { 
+                                    $$ = new cBinaryExprNode($1, $3, LE); 
+                                    CHECK_ERROR();
+                                }
         |   expr GE addit
-                                { $$ = new cBinaryExprNode($1, $3, GE); }
+                                { 
+                                    $$ = new cBinaryExprNode($1, $3, GE);
+                                    CHECK_ERROR(); 
+                                }
         |   expr NOT_EQUAL addit
-                                { $$ = new cBinaryExprNode($1, $3, NOT_EQUAL); }
+                                { 
+                                    $$ = new cBinaryExprNode($1, $3, NOT_EQUAL);
+                                    CHECK_ERROR(); 
+                                }
         |   addit
                                 { $$ = $1; }
 
 addit:      addit '+' term
-                                { $$ = new cBinaryExprNode($1, $3, '+'); }
+                                { 
+                                    $$ = new cBinaryExprNode($1, $3, '+');
+                                    CHECK_ERROR(); 
+                                }
         |   addit '-' term
-                                { $$ = new cBinaryExprNode($1, $3, '-'); }
+                                { 
+                                    $$ = new cBinaryExprNode($1, $3, '-');
+                                    CHECK_ERROR(); 
+                                }
         |   addit OR term
-                                { $$ = new cBinaryExprNode($1, $3, OR);}
+                                { 
+                                    $$ = new cBinaryExprNode($1, $3, OR);
+                                    CHECK_ERROR();
+                                }
         |   term
                                 { $$ = $1; }
         |   '-' term
-                                { $$ = new cUnaryExprNode('-', $2); }
+                                { 
+                                    $$ = new cUnaryExprNode('-', $2);
+                                    CHECK_ERROR(); 
+                                }
 
 term:       term '*' fact
-                                { $$ = new cBinaryExprNode($1, $3, '*'); }
+                                { 
+                                    $$ = new cBinaryExprNode($1, $3, '*');
+                                    CHECK_ERROR(); 
+                                }
         |   term '/' fact
-                                { $$ = new cBinaryExprNode($1, $3, '/'); }
+                                { 
+                                    $$ = new cBinaryExprNode($1, $3, '/');
+                                    CHECK_ERROR();
+                                }
         |   term MOD fact
-                                { $$ = new cBinaryExprNode($1, $3, MOD);}
+                                { 
+                                    $$ = new cBinaryExprNode($1, $3, MOD);
+                                    CHECK_ERROR();
+                                }
         |   term DIV fact
-                                { $$ = new cBinaryExprNode($1, $3, DIV);}
+                                { 
+                                    $$ = new cBinaryExprNode($1, $3, DIV);
+                                    CHECK_ERROR();
+                                }
         |   term AND fact
-                                { $$ = new cBinaryExprNode($1, $3, AND);}
+                                { 
+                                    $$ = new cBinaryExprNode($1, $3, AND);
+                                    CHECK_ERROR();
+                                }
         |   fact
                                 { $$ = $1; }
 
 fact:        '(' expr ')'
                                 { $$ = $2; }
         |   INT_VAL
-                                { $$ = new cIntExprNode($1); }
+                                { 
+                                    $$ = new cIntExprNode($1);
+                                    CHECK_ERROR(); 
+                                }
         |   REAL_VAL
-                                { $$ = new cRealExprNode($1); }
+                                { 
+                                    $$ = new cRealExprNode($1);
+                                    CHECK_ERROR(); 
+                                }
         |   variable
                                 { $$ = $1; }
         |   func_call
                                 { $$ = $1; }
         |   NOT fact
-                                { $$ = new cUnaryExprNode(NOT, $2); }
+                                { 
+                                    $$ = new cUnaryExprNode(NOT, $2);
+                                    CHECK_ERROR(); 
+                                }
 
 %%
 

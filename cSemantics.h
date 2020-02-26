@@ -150,7 +150,6 @@ class cSemantics : public cVisitor
                             rval = rval->GetDeclType();
                     }
 
-
                     if(!lval->IsCompatable(rval))
                     {
                         node->SemanticError(
