@@ -39,6 +39,11 @@ class cVarExprNode : public cExprNode
             return dynamic_cast<cSymbol *>(GetChild(0));
         }
 
+        cVarDeclNode * GetVarDecl()
+        {
+            return dynamic_cast<cVarDeclNode *>(GetSymbol()->GetDecl());
+        }
+
         bool HasIndex()
         {
             return NumChildren() > 1;
@@ -67,5 +72,15 @@ class cVarExprNode : public cExprNode
             cSymbol * varSym = dynamic_cast<cSymbol *>(GetChild(0));
             cDeclNode * varDecl = varSym->GetDecl();
             return varDecl == nullptr ? nullptr : varDecl->GetDeclType();
+        }
+
+        cDeclNode *GetBaseType()
+        {
+            cSymbol * varSym = dynamic_cast<cSymbol *>(GetChild(0));
+            cDeclNode * varDecl = varSym->GetDecl();
+            if(HasIndex())
+                return varDecl == nullptr ? nullptr : varDecl->GetDeclType()->GetIndexType();
+            else
+                return varDecl == nullptr ? nullptr : varDecl->GetDeclType();
         }
 };

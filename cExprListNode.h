@@ -33,7 +33,8 @@ class cExprListNode : public cAstNode
 
         cExprNode * GetExpr(int index)
         {
-            return dynamic_cast<cExprNode *>(GetChild(index));
+            return index > NumExpr() ? nullptr :
+                dynamic_cast<cExprNode *>(GetChild(index));
         }
 
         virtual string NodeType() { return string("exprList"); }

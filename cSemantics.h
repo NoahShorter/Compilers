@@ -80,6 +80,7 @@ class cSemantics : public cVisitor
 
         void Visit(cVarExprNode *node)
         {
+            VisitAllNodes(node);
             if(node != nullptr && !(node->GetType()))
             {
                 node->SemanticError(
@@ -89,7 +90,7 @@ class cSemantics : public cVisitor
             }
             else if(node != nullptr && node->HasIndex())
             {
-                if(!node->GetType()->IsType())
+                if(!node->GetType()->IsArray())
                 {
                     node->SemanticError(
                         node->GetSymbol()->GetName() + 
@@ -102,24 +103,26 @@ class cSemantics : public cVisitor
                     
                     cExprListNode * indexes = node->GetIndexes();
 
-                    for(int ii = 0; ii < node->NumIndexes(); ++ii)
-                    {
-                        cExprNode * index = indexes->GetExpr(ii);
-                        if(!index->GetType()->IsInt() &&
-                            !index->GetType()->IsChar())
-                        {
-                            node->SemanticError(
-                                "Index of " +
-                                node->GetSymbol()->GetName() + 
-                                " is not an integer");
-                        }
-                    }
-
                     if(node->NumIndexes() != var->NumIndexes())
                     {
                         node->SemanticError(
                             node->GetSymbol()->GetName() + 
                             " does not have the correct number of indexes");
+                    }
+                    else
+                    {
+                        for(int ii = 0; ii < node->NumIndexes(); ++ii)
+                        {
+                            cExprNode * index = indexes->GetExpr(ii);
+                            if(!index->GetBaseType()->IsInt() &&
+                                !index->GetBaseType()->IsChar())
+                            {
+                                node->SemanticError(
+                                    "Index of " +
+                                    node->GetSymbol()->GetName() + 
+                                    " is not an integer");
+                            }
+                        }
                     }
                 }
             }
@@ -135,19 +138,20 @@ class cSemantics : public cVisitor
 
                 if(lvalExpr != nullptr && rvalExpr != nullptr)
                 {
-                    cDeclNode * lval = lvalExpr->GetType();
-                    if(lvalExpr->HasIndex())
+                    cDeclNode * lval = lvalExpr->GetBaseType();
+                    /*if(lvalExpr->HasIndex())
                         lval = lval->GetIndexType();
                     else
-                        lval = lval->GetDeclType();
+                        lval = lval->GetDeclType();*/
 
-                    cDeclNode * rval = rvalExpr->GetType();
+                    cDeclNode * rval = rvalExpr->GetBaseType();
                     if (rval != nullptr)
                     {    
-                        if (rvalExpr->HasIndex())
+                        //rval = rval->GetType();
+                        /*if (rvalExpr->HasIndex())
                             rval = rval->GetIndexType();
                         else
-                            rval = rval->GetDeclType();
+                            rval = rval->GetDeclType();*/
                     }
 
                     if(!lval->IsCompatable(rval))

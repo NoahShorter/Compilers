@@ -37,8 +37,8 @@ class cBinaryExprNode : public cExprNode
 
             if (left != nullptr && right != nullptr)
             {
-                leftType = left->GetType();
-                rightType = right->GetType();
+                leftType = left->GetBaseType();
+                rightType = right->GetBaseType();
             }
 
             if(leftType != nullptr && rightType != nullptr)

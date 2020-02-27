@@ -58,6 +58,8 @@ class cVarDeclNode : public cDeclNode
             return GetDeclType()->GetName();
         }
 
+
         virtual string NodeType() { return string("var_decl"); }
         virtual void Visit(cVisitor *visitor) { visitor->Visit(this); }
+
 };

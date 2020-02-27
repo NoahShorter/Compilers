@@ -21,11 +21,24 @@ class cDeclNode : public cAstNode
         virtual bool IsChar()  { return false; }
         virtual bool IsType()  { return false; }
         virtual bool IsFunc()  { return false; }
+        virtual bool IsArray() { return false; }
 
         virtual cDeclNode * GetDeclType() = 0;
         virtual cDeclNode * GetIndexType() { return nullptr; }
 
         virtual string GetName() = 0;
+
+        int GetSize() { return m_size; }
+        void SetSize(int size) { m_size = size; }
+
+        int GetOffset() { return m_offset; }
+        void SetOffset(int offset) { m_offset = offset; }
+
+        virtual string AttributesToString() 
+        {
+            return " size=\"" + std::to_string(m_size) + "\"" +
+                " offset=\"" + std::to_string(m_offset) + "\"";
+        }
 
         bool IsCompatable(cDeclNode * rval)
         {
@@ -48,5 +61,9 @@ class cDeclNode : public cAstNode
 
             return returnType;
         }
+
+    protected:
+        int m_size;
+        int m_offset;
 
 };

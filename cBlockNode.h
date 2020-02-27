@@ -23,10 +23,22 @@ class cBlockNode : public cStmtNode
         cBlockNode(cDeclsNode *decls, cStmtsNode *statements)
             : cStmtNode()
         {
+            m_size = 0; //decls->GetSize() + statements->GetSize();
             AddChild(decls);
             AddChild(statements);
         }
 
         virtual string NodeType() { return string("block"); }
         virtual void Visit(cVisitor *visitor) { visitor->Visit(this); }
+
+        int GetSize() { return m_size; }
+        void SetSize(int size) { m_size = size; }
+
+        virtual string AttributesToString() 
+        {
+            return " size=\"" + std::to_string(m_size) + "\"";
+        }
+
+    private:
+        int m_size;    
 };

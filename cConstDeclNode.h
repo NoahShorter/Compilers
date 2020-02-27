@@ -48,6 +48,13 @@ class cConstDeclNode : public cDeclNode
             return GetDeclType()->GetName();
         }
 
+        int GetSize() { return m_size; }
+        void SetSize(int size) { m_size = size; }
+
         virtual string NodeType() { return string("const_decl"); }
         virtual void Visit(cVisitor *visitor) { visitor->Visit(this); }
+
+    private:
+        int m_size;
+        int m_offset;
 };

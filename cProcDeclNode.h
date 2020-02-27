@@ -57,6 +57,12 @@ class cProcDeclNode : public cDeclNode
             return "Procedure";
         }
 
+        int GetSize() { return m_size; }
+        void SetSize(int size) { m_size = size; }
+
         virtual string NodeType() { return string("proc"); }
         virtual void Visit(cVisitor *visitor) { visitor->Visit(this); }
+
+    private:
+        int m_size;
 };

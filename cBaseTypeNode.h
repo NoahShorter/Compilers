@@ -59,10 +59,11 @@ class cBaseTypeNode : public cDeclNode
             return this;
         }
 
+        int GetSize() { return m_size; }
+
         virtual string NodeType() { return string("type"); }
         virtual void Visit(cVisitor *visitor) { visitor->Visit(this); }
     protected:
         string m_name;
-        int m_size;
         int m_isFloat = 0;
 };

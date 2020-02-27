@@ -149,6 +149,12 @@ class cFuncDeclNode : public cDeclNode
             return true;
         }
 
+        int GetSize() { return m_size; }
+        void SetSize(int size) { m_size = size; }
+
         virtual string NodeType() { return string("func"); }
         virtual void Visit(cVisitor *visitor) { visitor->Visit(this); }
+
+    private:
+        int m_size;
 };

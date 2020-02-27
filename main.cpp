@@ -18,6 +18,7 @@
 #include "astnodes.h"
 #include "pascalparse.h"
 #include "cSemantics.h"
+#include "cMemory.h"
 
 // define global variables
 cSymbolTable g_symbolTable;
@@ -80,10 +81,12 @@ int main(int argc, char **argv)
     if (yyast_root != nullptr && result == 0 && yynerrs == 0)
     {
         cSemantics *semantics = new cSemantics();
+        cMemory * memory = new cMemory();
         semantics->VisitAllNodes(yyast_root);
 
         if (yynerrs == 0)
         {
+            memory->VisitAllNodes(yyast_root);
             output << yyast_root->ToString() << std::endl;
         }
     }
