@@ -129,6 +129,12 @@ class cFuncDeclNode : public cDeclNode
                          == nullptr) ? true : false;
         }
 
+        cBlockNode * GetBlock()
+        {
+            return HasBlock() ? dynamic_cast<cBlockNode *>(GetChild(3))
+                : nullptr;
+        }
+
         cVarDeclsNode * GetParams()
         {
             return dynamic_cast<cVarDeclsNode *>(GetChild(2));
@@ -149,12 +155,8 @@ class cFuncDeclNode : public cDeclNode
             return true;
         }
 
-        int GetSize() { return m_size; }
-        void SetSize(int size) { m_size = size; }
-
         virtual string NodeType() { return string("func"); }
         virtual void Visit(cVisitor *visitor) { visitor->Visit(this); }
 
     private:
-        int m_size;
 };

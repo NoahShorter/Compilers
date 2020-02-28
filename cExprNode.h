@@ -29,14 +29,6 @@ class cExprNode : public cStmtNode
         int GetOffset() { return m_offset; }
         void SetOffset(int offset) { m_offset = offset; }
 
-        virtual string AttributesToString() 
-        {
-            string returnString = " size=\"" + std::to_string(m_size) + "\"" +
-                " offset=\"" + std::to_string(m_offset) + "\"";
-            if()
-            return returnString;
-        }
-
     protected:
         int m_size;
         int m_offset;

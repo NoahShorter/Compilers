@@ -49,6 +49,11 @@ class cVarDeclsNode : public cDeclsNode
             return dynamic_cast<cVarDeclNode *>(GetChild(index));
         }
 
+        int NumVarDecls()
+        {
+            return NumChildren();
+        }
+
         cDeclNode * GetType()
         {
             cVarDeclNode * vardecl = 
@@ -56,6 +61,17 @@ class cVarDeclsNode : public cDeclsNode
             return vardecl->GetDeclType();
         }
 
+        int GetSize() { return m_size; }
+        void SetSize(int size) { m_size = size; }
+
         virtual string NodeType() { return string("var_decls"); }
         virtual void Visit(cVisitor *visitor) { visitor->Visit(this); }
+
+        virtual string AttributesToString() 
+        {
+            return " size=\"" + std::to_string(m_size) + "\"";
+        }
+
+    protected:
+        int m_size;
 };

@@ -15,11 +15,13 @@ class cMemory : public cVisitor
 {
     private:
         int m_totalOffset;
+        int m_funcOffset;
     public:
         // param is the block that makes up the program
         cMemory() : cVisitor()
         {
             m_totalOffset = 0;
+            m_funcOffset = 0;
         }
         virtual void VisitAllNodes(cAstNode *node)
         {
@@ -50,9 +52,13 @@ class cMemory : public cVisitor
 
         void Visit(cVarExprNode * node)
         {
+            VisitAllNodes(node);
             cDeclNode * decl = node->GetVarDecl();
-            node->SetSize(decl->GetSize());
-            node->SetOffset(decl->GetOffset());
+            if(decl != nullptr)
+            {
+                node->SetSize(decl->GetSize());
+                node->SetOffset(decl->GetOffset());
+            }
         }
 
         void Visit(cArrayDeclNode * node)
@@ -85,6 +91,54 @@ class cMemory : public cVisitor
             int startValue = node->GetStart();
             int endValue = node->GetEnd();
             node->SetSize((endValue - startValue) + 1);
+        }
+
+        void Visit(cVarDeclsNode * node)
+        {
+            VisitAllNodes(node);
+            int VarSize = 0;
+            for (int ii = 0; ii < node->NumVarDecls(); ++ii)
+                VarSize += (node->GetParam(ii)->GetSize()) > 4 ? 
+                    node->GetParam(ii)->GetSize() : 4 ;
+
+            node->SetSize(VarSize);
+            m_totalOffset -= VarSize;
+        }
+
+        void Visit(cFuncDeclNode * node)
+        {
+            int tempTotal = m_totalOffset;
+            Visit(node->GetParams());
+            m_funcOffset = 0;
+            node->SetSize(4);
+            node->SetOffset(m_funcOffset);
+            m_funcOffset -= 12;
+
+            cVarDeclsNode * params = node->GetParams();
+
+            for (int ii = 0; ii < params->NumVarDecls(); ++ii)
+            {
+                int TypeSize = params->GetParam(ii)->GetSize();
+
+                if(m_funcOffset % 4 != 0)
+                    m_funcOffset -= (4 + (m_funcOffset % 4));
+
+                params->GetParam(ii)->SetOffset(m_funcOffset);
+                m_funcOffset -= TypeSize;
+            }
+            
+            m_totalOffset = tempTotal;
+            Visit(node->GetBlock());
+
+            m_totalOffset = tempTotal;
+        }
+
+        void Visit(cFuncExprNode * node)
+        {
+            int size = 
+                node->GetFunc()->GetParams()->GetSize();
+
+            node->SetSize(size);
         }
 
 };

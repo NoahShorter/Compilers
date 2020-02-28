@@ -14,6 +14,7 @@
 #include "cAstNode.h"
 #include "cExprNode.h"
 #include "cSymbolTable.h"
+#include "cArrayDeclNode.h"
 
 class cVarExprNode : public cExprNode
 {
@@ -82,5 +83,21 @@ class cVarExprNode : public cExprNode
                 return varDecl == nullptr ? nullptr : varDecl->GetDeclType()->GetIndexType();
             else
                 return varDecl == nullptr ? nullptr : varDecl->GetDeclType();
+        }
+
+        virtual string AttributesToString() 
+        {
+            string returnString = " size=\"" + std::to_string(GetBaseType()->GetSize()) + "\"" +
+                " offset=\"" + std::to_string(m_offset) + "\"";
+
+            cDeclNode * ty = GetType();
+
+            if(ty->IsArray())
+            {
+                cArrayDeclNode * ar = dynamic_cast<cArrayDeclNode *>(ty);
+                returnString += " rowsizes=\"" + ar->GetRowSizes() + "\"" +
+                    " startindexes=\"" + ar->GetStartIndexes() + "\"";
+            }
+            return returnString;
         }
 };

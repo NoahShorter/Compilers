@@ -35,6 +35,18 @@ class cFuncExprNode : public cExprNode
             return dynamic_cast<cExprListNode *>(GetChild(1));
         }
 
+        cFuncDeclNode * GetFunc()
+        {
+            cSymbol * funcNameSym = dynamic_cast<cSymbol *>(GetChild(0));
+            cFuncDeclNode * returnDecl = nullptr;
+            if(funcNameSym != nullptr)
+            {
+                returnDecl = 
+                    dynamic_cast<cFuncDeclNode *>(funcNameSym->GetDecl());
+            }
+            return returnDecl;
+        }
+
         cDeclNode *GetType()
         {
             cSymbol * funcNameSym = dynamic_cast<cSymbol *>(GetChild(0));
@@ -48,4 +60,10 @@ class cFuncExprNode : public cExprNode
             }
             return returnDeclType;
         }
+
+        virtual string AttributesToString() 
+        {
+            return" paramSize=\"" + std::to_string(m_size) + "\"";
+        }
+
 };
