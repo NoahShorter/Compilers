@@ -21,6 +21,7 @@ class cDeclNode : public cAstNode
         virtual bool IsChar()  { return false; }
         virtual bool IsType()  { return false; }
         virtual bool IsFunc()  { return false; }
+        virtual bool IsProc()  { return false; }
         virtual bool IsArray() { return false; }
 
         virtual cDeclNode * GetDeclType() = 0;
@@ -36,8 +37,11 @@ class cDeclNode : public cAstNode
 
         virtual string AttributesToString() 
         {
-            return " size=\"" + std::to_string(m_size) + "\"" +
-                " offset=\"" + std::to_string(m_offset) + "\"";
+            if(!IsProc())
+                return " size=\"" + std::to_string(m_size) + "\"" +
+                    " offset=\"" + std::to_string(m_offset) + "\"";
+            else
+                return "";
         }
 
         bool IsCompatable(cDeclNode * rval)

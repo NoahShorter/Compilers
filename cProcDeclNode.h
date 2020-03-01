@@ -33,11 +33,13 @@ class cProcDeclNode : public cDeclNode
                 g_symbolTable.Insert(token);
             }
 
+            token->SetDecl(this);
             AddChild(token);
         }
 
         void AddParamBlock(cBlockNode *block, cDeclsNode *vardecls = nullptr)
         {
+            block->SetFuncBlock(true);
             AddChild(vardecls);
             AddChild(block);
         }
@@ -46,7 +48,24 @@ class cProcDeclNode : public cDeclNode
         {
             AddChild(vardecls);
         }
+
+        cVarDeclsNode * GetParams()
+        {
+            return dynamic_cast<cVarDeclsNode *>(GetChild(1));
+        }
         
+        cBlockNode * GetBlock()
+        {
+            return HasBlock() ? dynamic_cast<cBlockNode *>(GetChild(2))
+                : nullptr;
+        }
+
+        bool HasBlock()
+        {
+            return !(dynamic_cast<cBlockNode *>(GetChild(2))
+                         == nullptr) ? true : false;
+        }
+
         cDeclNode * GetDeclType()
         {
             return nullptr;
@@ -56,6 +75,8 @@ class cProcDeclNode : public cDeclNode
         {
             return "Procedure";
         }
+
+        bool IsProc()  { return true; }
 
         int GetSize() { return m_size; }
         void SetSize(int size) { m_size = size; }

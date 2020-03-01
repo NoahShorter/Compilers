@@ -96,6 +96,7 @@ class cFuncDeclNode : public cDeclNode
 
         void AddBlock(cBlockNode *block)
         {
+            block->SetFuncBlock(true);
             cSymbol * name = dynamic_cast<cSymbol *>(GetChild(0));
             cFuncDeclNode * decl = 
                 dynamic_cast<cFuncDeclNode *>(name->GetDecl());
