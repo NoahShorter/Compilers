@@ -28,8 +28,8 @@ class cArrayDeclNode : public cDeclNode
             AddChild(name);
             AddChild(type->GetDecl());
             AddChild(ranges);
-            m_rowSizes = "";
-            m_startIndexes = "";
+            m_rowSizes.clear();
+            m_startIndexes.clear();
         }
 
         cDeclNode * GetDeclType()
@@ -73,11 +73,31 @@ class cArrayDeclNode : public cDeclNode
             return dynamic_cast<cRangeDeclNode *>(GetRanges()->GetDecl(index));
         }
 
-        string GetRowSizes() { return m_rowSizes; }
-        void SetRowSizes(string rowSize) { m_rowSizes = rowSize; }
+        vector<int> GetRowSizes() { return m_rowSizes; }
+        void SetRowSizes(vector<int> rowSize) { m_rowSizes = rowSize; }
+        string GetRowSizesAsString() 
+        { 
+            string RowSizes = "";
+            for(auto it = m_rowSizes.begin(); it != m_rowSizes.end(); ++it)
+            {
+                RowSizes += std::to_string(*it) + " ";
+            }
+            RowSizes.pop_back();
+            return RowSizes;
+        }
 
-        string GetStartIndexes() { return m_startIndexes; }
-        void SetStartIndexes(string startIndexes) { m_startIndexes = startIndexes; }
+        vector<int> GetStartIndexes() { return m_startIndexes; }
+        void SetStartIndexes(vector<int> startIndexes) { m_startIndexes = startIndexes; }
+        string GetStartIndexesAsString() 
+        { 
+            string StartIndexes = "";
+            for(auto it = m_startIndexes.begin(); it != m_startIndexes.end(); ++it)
+            {
+                StartIndexes += std::to_string(*it) + " ";
+            }
+            StartIndexes.pop_back();
+            return StartIndexes;
+        }
 
         virtual string NodeType() { return string("array"); }
         virtual void Visit(cVisitor *visitor) { visitor->Visit(this); }
@@ -85,11 +105,11 @@ class cArrayDeclNode : public cDeclNode
         virtual string AttributesToString() 
         {
             return " size=\"" + std::to_string(m_size) + "\"" +
-                " rowsizes=\"" + m_rowSizes + "\"" +
-                " startindexes=\"" + m_startIndexes + "\"";
+                " rowsizes=\"" + GetRowSizesAsString() + "\"" +
+                " startindexes=\"" + GetStartIndexesAsString() + "\"";
         }
 
     private:
-        string m_rowSizes;
-        string m_startIndexes;
+        vector<int> m_rowSizes;
+        vector<int> m_startIndexes;
 };

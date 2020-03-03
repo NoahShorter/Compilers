@@ -24,7 +24,6 @@ class cBlockNode : public cStmtNode
             : cStmtNode()
         {
             m_size = 0; //decls->GetSize() + statements->GetSize();
-            m_isFuncBlock = false;
             AddChild(decls);
             AddChild(statements);
         }
@@ -35,15 +34,11 @@ class cBlockNode : public cStmtNode
         int GetSize() { return m_size; }
         void SetSize(int size) { m_size = size; }
 
-        bool IsFuncBlock() { return m_isFuncBlock; }
-        void SetFuncBlock(bool funcBlock) { m_isFuncBlock = funcBlock; }
-
         virtual string AttributesToString() 
         {
             return " size=\"" + std::to_string(m_size) + "\"";
         }
 
     private:
-        int m_size;
-        bool m_isFuncBlock;    
+        int m_size;  
 };

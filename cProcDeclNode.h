@@ -39,7 +39,6 @@ class cProcDeclNode : public cDeclNode
 
         void AddParamBlock(cBlockNode *block, cDeclsNode *vardecls = nullptr)
         {
-            block->SetFuncBlock(true);
             AddChild(vardecls);
             AddChild(block);
         }
@@ -83,6 +82,11 @@ class cProcDeclNode : public cDeclNode
 
         virtual string NodeType() { return string("proc"); }
         virtual void Visit(cVisitor *visitor) { visitor->Visit(this); }
+
+        virtual string AttributesToString() 
+        {
+            return "";
+        }
 
     private:
         int m_size;

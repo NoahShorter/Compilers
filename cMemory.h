@@ -19,9 +19,6 @@ class cMemory : public cVisitor
 
         bool m_paramDecls;
         int m_varDeclSize;
-
-        bool m_funcBlock;
-        int m_blockOffset;
     public:
         // param is the block that makes up the program
         cMemory() : cVisitor()
@@ -31,9 +28,6 @@ class cMemory : public cVisitor
 
             m_paramDecls = false;
             m_varDeclSize = 0;
-
-            m_funcBlock = false;
-            m_blockOffset = 0;
         }
         virtual void VisitAllNodes(cAstNode *node)
         {
@@ -44,17 +38,10 @@ class cMemory : public cVisitor
         {
             VisitAllNodes(node);
             int BlockOffset = m_totalOffset;
-            if(node->IsFuncBlock())
-            {
-                BlockOffset = m_blockOffset;
-                if(m_blockOffset % 4 != 0)
-                    BlockOffset += (4 - (m_blockOffset % 4));
-            }
-            else
-            {
-                if(m_totalOffset % 4 != 0)
-                    BlockOffset += (4 - (m_totalOffset % 4));
-            }
+
+            if(m_totalOffset % 4 != 0)
+                BlockOffset += (4 - (m_totalOffset % 4));
+
             node->SetSize(BlockOffset);
         }
 
@@ -72,14 +59,6 @@ class cMemory : public cVisitor
                 node->SetOffset(m_funcOffset);
                 m_funcOffset -= TypeSize;
                 m_varDeclSize += TypeSize > 4 ? TypeSize : 4;
-            }
-            else if(m_funcBlock)
-            {
-                if(TypeSize != 1 && m_blockOffset % 4 != 0)
-                    m_blockOffset += (4 - (m_blockOffset % 4));
-
-                node->SetOffset(m_blockOffset);
-                m_blockOffset += decl->GetSize();
             }
             else
             {
@@ -106,17 +85,18 @@ class cMemory : public cVisitor
         {
             VisitAllNodes(node);
             int ArraySize = node->GetIndexType()->GetSize();
-            string RowSizes = std::to_string(ArraySize);
-            string StartIndexes = 
-                std::to_string(node->GetRange(0)->GetStart());
+            vector<int> RowSizes;
+            RowSizes.push_back(ArraySize);
+            vector<int> StartIndexes;
+            StartIndexes.push_back(node->GetRange(0)->GetStart());
             cDeclsNode * ranges = node->GetRanges();
 
             for (int ii = 0; ii < ranges->NumDecls(); ++ii)
             {
                 if(ii != 0)
                 {
-                    RowSizes += " " + std::to_string(ArraySize);
-                    StartIndexes += " " + std::to_string(node->GetRange(ii)->GetStart());
+                    RowSizes.push_back(ArraySize);
+                    StartIndexes.push_back(node->GetRange(ii)->GetStart());
                 }
                 int rangeSize = ranges->GetDecl(ii)->GetSize();
                 ArraySize *= rangeSize;
@@ -147,18 +127,20 @@ class cMemory : public cVisitor
 
         void Visit(cFuncDeclNode * node)
         {
+            int offset = m_totalOffset;
 
-            m_funcOffset = 0;
-            node->SetSize(4);
-            node->SetOffset(m_funcOffset);
-            m_funcOffset -= 12;
+            node->SetSize(node->GetDeclType()->GetSize());
+            node->SetOffset(0);
+
+            m_funcOffset = -12;
 
             Visit(node->GetParams());
-            
-            m_blockOffset = m_totalOffset;
-            m_funcBlock = true;
+
+            m_totalOffset = node->GetDeclType()->GetSize();
+
             Visit(node->GetBlock());
-            //m_funcBlock = false;
+
+            m_totalOffset = offset;
         }
 
         void Visit(cFuncExprNode * node)
@@ -171,14 +153,17 @@ class cMemory : public cVisitor
 
         void Visit(cProcDeclNode * node)
         {
-            m_funcOffset -= 12;
+            int offset = m_totalOffset;
+
+            m_funcOffset = -12;
 
             Visit(node->GetParams());
-            
-            m_blockOffset = 0;
-            m_funcBlock = true;
+
+            m_totalOffset = 0;
+
             Visit(node->GetBlock());
-            //m_funcBlock = false;
+
+            m_totalOffset = offset;
         }
 
         void Visit(cProcCallNode * node)

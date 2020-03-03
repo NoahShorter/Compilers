@@ -37,11 +37,8 @@ class cDeclNode : public cAstNode
 
         virtual string AttributesToString() 
         {
-            if(!IsProc())
-                return " size=\"" + std::to_string(m_size) + "\"" +
-                    " offset=\"" + std::to_string(m_offset) + "\"";
-            else
-                return "";
+            return " size=\"" + std::to_string(m_size) + "\"" +
+                " offset=\"" + std::to_string(m_offset) + "\"";
         }
 
         bool IsCompatable(cDeclNode * rval)

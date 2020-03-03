@@ -95,8 +95,8 @@ class cVarExprNode : public cExprNode
             if(ty->IsArray())
             {
                 cArrayDeclNode * ar = dynamic_cast<cArrayDeclNode *>(ty);
-                returnString += " rowsizes=\"" + ar->GetRowSizes() + "\"" +
-                    " startindexes=\"" + ar->GetStartIndexes() + "\"";
+                returnString += " rowsizes=\"" + ar->GetRowSizesAsString() + "\"" +
+                    " startindexes=\"" + ar->GetStartIndexesAsString() + "\"";
             }
             return returnString;
         }
