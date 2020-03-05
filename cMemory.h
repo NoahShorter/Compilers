@@ -74,10 +74,18 @@ class cMemory : public cVisitor
         {
             VisitAllNodes(node);
             cDeclNode * decl = node->GetVarDecl();
+            cDeclNode * typeDecl = node->GetBaseType();
             if(decl != nullptr)
             {
-                node->SetSize(decl->GetSize());
+                node->SetSize(typeDecl->GetSize());
                 node->SetOffset(decl->GetOffset());
+                if(node->GetType()->IsArray())
+                {
+                    cArrayDeclNode * ar = 
+                        dynamic_cast<cArrayDeclNode*>(node->GetType());
+                    node->SetRowSizes(ar->GetRowSizes());
+                    node->SetStartIndexes(ar->GetStartIndexes());
+                }
             }
         }
 
@@ -145,6 +153,7 @@ class cMemory : public cVisitor
 
         void Visit(cFuncExprNode * node)
         {
+            VisitAllNodes(node);
             int size = 
                 node->GetFunc()->GetParams()->GetSize();
 
@@ -168,6 +177,7 @@ class cMemory : public cVisitor
 
         void Visit(cProcCallNode * node)
         {
+            VisitAllNodes(node);
             int size =
                 node->GetProc()->GetParams()->GetSize();
 

@@ -40,9 +40,9 @@ class cVarExprNode : public cExprNode
             return dynamic_cast<cSymbol *>(GetChild(0));
         }
 
-        cVarDeclNode * GetVarDecl()
+        cDeclNode * GetVarDecl()
         {
-            return dynamic_cast<cVarDeclNode *>(GetSymbol()->GetDecl());
+            return GetSymbol()->GetDecl();
         }
 
         bool HasIndex()
@@ -87,16 +87,15 @@ class cVarExprNode : public cExprNode
 
         virtual string AttributesToString() 
         {
-            string returnString = " size=\"" + std::to_string(GetBaseType()->GetSize()) + "\"" +
+            string returnString = " size=\"" + std::to_string(m_size) + "\"" +
                 " offset=\"" + std::to_string(m_offset) + "\"";
 
             cDeclNode * ty = GetType();
 
             if(ty->IsArray())
             {
-                cArrayDeclNode * ar = dynamic_cast<cArrayDeclNode *>(ty);
-                returnString += " rowsizes=\"" + ar->GetRowSizesAsString() + "\"" +
-                    " startindexes=\"" + ar->GetStartIndexesAsString() + "\"";
+                returnString += " rowsizes=\"" + GetRowSizesAsString() + "\"" +
+                    " startindexes=\"" + GetStartIndexesAsString() + "\"";
             }
             return returnString;
         }
