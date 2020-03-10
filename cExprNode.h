@@ -23,6 +23,8 @@ class cExprNode : public cStmtNode
 
         virtual bool HasIndex() { return false; }
 
+        virtual int GetValue() { return 0; }
+
         int GetSize() { return m_size; }
         void SetSize(int size) { m_size = size; }
 

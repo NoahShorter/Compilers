@@ -6,11 +6,10 @@
 // Author: Phil Howard 
 // phil.howard@oit.edu
 //
-// Date: Jan. 18, 2016
-//
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 #include <iostream>
 #include <fstream>
 #include "cSymbolTable.h"
@@ -19,6 +18,7 @@
 #include "pascalparse.h"
 #include "cSemantics.h"
 #include "cMemory.h"
+#include "cCodeGen.h"
 
 // define global variables
 cSymbolTable g_symbolTable;
@@ -31,7 +31,6 @@ int main(int argc, char **argv)
 
     const char *outfile_name;
     int result = 0;
-    std::streambuf *cout_buf = std::cout.rdbuf();
 
     if (argc > 1)
     {
@@ -47,27 +46,33 @@ int main(int argc, char **argv)
     {
         outfile_name = argv[2];
     } else {
-        outfile_name = "/dev/tty";
+        //outfile_name = "/dev/tty";
+        outfile_name = "pascalout.sl";
     }
 
-    std::ofstream output(outfile_name);
-    if (!output.is_open())
-    {
-        std::cerr << "ERROR: Unable to open file " << outfile_name << "\n";
-        exit(-1);
-    }
-
-    // fixup cout so it redirects to output
-    std::cout.rdbuf(output.rdbuf());
-
-    /* Lab 5a main.cpp
+    g_symbolTable.InitTable();
 
     result = yyparse();
     if (yyast_root != nullptr && result == 0 && yynerrs == 0)
     {
-        output << yyast_root->ToString() << std::endl;
-    } else {
-            output << yynerrs << " Errors in compile\n";
+        cSemantics *semantics = new cSemantics();
+        semantics->VisitAllNodes(yyast_root);
+
+        if (yynerrs == 0)
+        {
+            cMemory sizer;
+            sizer.VisitAllNodes(yyast_root);
+
+            cCodeGen coder(outfile_name);
+            coder.VisitNode(yyast_root);
+
+            //std::cout << yyast_root->ToString() << std::endl;
+        }
+    } 
+
+    if (yyast_root == nullptr || result != 0 || yynerrs != 0)
+    {
+        std::cout << yynerrs << " Errors in compile\n";
     }
 
     if (result == 0 && yylex() != 0)
@@ -75,32 +80,5 @@ int main(int argc, char **argv)
         std::cout << "Junk at end of program\n";
     }
 
-    */
-
-    result = yyparse();
-    if (yyast_root != nullptr && result == 0 && yynerrs == 0)
-    {
-        cSemantics *semantics = new cSemantics();
-        cMemory * memory = new cMemory();
-        semantics->VisitAllNodes(yyast_root);
-
-        if (yynerrs == 0)
-        {
-            memory->VisitAllNodes(yyast_root);
-            output << yyast_root->ToString() << std::endl;
-        }
-    }
-
-    if (yyast_root == nullptr || result != 0 || yynerrs != 0)
-    {
-        output << yynerrs << " Errors in compile\n";
-    }
-
-
-    // close output and fixup cout
-    // If these aren't done, you may get a segfault on program exit
-    output.close();
-    std::cout.rdbuf(cout_buf);
-
-    return result + yynerrs;
+    return result;
 }

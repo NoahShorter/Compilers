@@ -75,6 +75,11 @@ class cProcDeclNode : public cDeclNode
             return "Procedure";
         }
 
+        string GetFuncName()
+        {
+            return dynamic_cast<cSymbol *>(GetChild(0))->GetName();
+        }
+
         bool IsProc()  { return true; }
 
         int GetSize() { return m_size; }

@@ -27,6 +27,21 @@ class cIfNode : public cStmtNode
             AddChild(elseStmt);
         }
 
+        cExprNode * GetCondition()
+        {
+            return dynamic_cast<cExprNode *>(GetChild(0));
+        }
+
+        cStmtNode * GetIfStmt()
+        {
+            return dynamic_cast<cStmtNode *>(GetChild(1));
+        }
+
+        cStmtNode * GetElseStmt()
+        {
+            return dynamic_cast<cStmtNode *>(GetChild(2));
+        }
+
         virtual string NodeType() { return string("if"); }
         virtual void Visit(cVisitor *visitor) { visitor->Visit(this); }
 };

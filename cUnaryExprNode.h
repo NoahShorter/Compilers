@@ -27,6 +27,11 @@ class cUnaryExprNode : public cExprNode
         virtual void Visit(cVisitor *visitor) { visitor->Visit(this); }
         virtual string NodeType() { return string("unaryExpr"); }
 
+        cExprNode * GetExpr()
+        {
+            return dynamic_cast<cExprNode *>(GetChild(1));
+        }
+
         cDeclNode *GetType()
         {
             return dynamic_cast<cSymbol *>(GetChild(1))->GetDecl();

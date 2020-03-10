@@ -28,6 +28,21 @@ class cBinaryExprNode : public cExprNode
         virtual void Visit(cVisitor *visitor) { visitor->Visit(this); }
         virtual string NodeType() { return string("expr"); }
 
+        cExprNode * GetLeft()
+        {
+            return dynamic_cast<cExprNode *>(GetChild(0));
+        }
+
+        cExprNode * GetRight()
+        {
+            return dynamic_cast<cExprNode *>(GetChild(2));
+        }
+
+        int GetOp()
+        {
+            return (dynamic_cast<cOpNode *>(GetChild(1)))->GetOp();
+        }
+
         cDeclNode *GetType()
         {
             cExprNode * left = dynamic_cast<cExprNode *>(GetChild(0));

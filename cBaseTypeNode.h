@@ -51,7 +51,7 @@ class cBaseTypeNode : public cDeclNode
 
         bool IsInt()
         {
-            return m_name == "integer";
+            return m_name == "integer" || m_name == "char";
         }
 
         cDeclNode * GetDeclType()

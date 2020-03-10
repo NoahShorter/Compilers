@@ -1,0 +1,29 @@
+.function foo
+foo:
+ADJSP  4 
+LABEL1:
+PUSHVAR  -12 
+PUSH  100 
+LT
+JUMPE @LABEL0
+PUSHVAR  -12 
+PUSHVAR  -16 
+PLUS
+POPVAR  -12 
+PUSHVAR  -12 
+Call @print
+POP
+POP
+JUMP @LABEL1
+LABEL0:
+PUSHVAR 0
+RETURN
+.function main
+main:
+ADJSP  4 
+PUSH  10 
+PUSH  0 
+CALL @foo
+POPARGS  8 
+PUSH 0
+RETURNV

@@ -150,6 +150,11 @@ class cFuncDeclNode : public cDeclNode
             return GetDeclType()->GetName();
         }
 
+        string GetFuncName()
+        {
+            return dynamic_cast<cSymbol *>(GetChild(0))->GetName();
+        }
+
         bool IsFunc()
         {
             return true;

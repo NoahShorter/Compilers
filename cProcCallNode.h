@@ -24,6 +24,16 @@ class cProcCallNode : public cStmtNode
             AddChild(args);
         }
 
+        cExprListNode * GetParams()
+        {
+            return dynamic_cast<cExprListNode *>(GetChild(1));
+        }
+
+        cSymbol * GetName()
+        {
+            return dynamic_cast<cSymbol *>(GetChild(0));
+        }
+
         cProcDeclNode * GetProc()
         {
             cSymbol * name = dynamic_cast<cSymbol *>(GetChild(0));

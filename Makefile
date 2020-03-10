@@ -13,6 +13,7 @@ OBJS=main.o \
 	 pascalparse.o \
 	 cVisitor.o \
 	 cSymbolTable.o \
+	 emit.o \
 
 all: pascal
 
@@ -37,6 +38,9 @@ cSymbolTable.o: cSymbolTable.cpp
 
 main.o: main.cpp pascalparse.c pascallex.c 
 	g++ $(COPTS) main.cpp -o $@
+
+emit.o: emit.cpp
+	g++ $(COPTS) emit.cpp -o $@
 
 pascallex.o: pascallex.c
 	g++ $(COPTS) -Wno-sign-compare $? -o $@
