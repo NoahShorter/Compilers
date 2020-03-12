@@ -127,7 +127,8 @@ class cMemory : public cVisitor
             m_varDeclSize = 0;
 
             m_paramDecls = true;
-            VisitAllNodes(node);
+            if (node != nullptr) 
+                VisitAllNodes(node);
             m_paramDecls = false;
             
             node->SetSize(m_varDeclSize);
@@ -142,11 +143,13 @@ class cMemory : public cVisitor
 
             m_funcOffset = -12;
 
-            Visit(node->GetParams());
+            if(node->GetParams() != nullptr)
+                Visit(node->GetParams());
 
             m_totalOffset = node->GetDeclType()->GetSize();
 
-            Visit(node->GetBlock());
+            if(node->GetBlock() != nullptr)
+                Visit(node->GetBlock());
 
             m_totalOffset = offset;
         }
@@ -154,8 +157,9 @@ class cMemory : public cVisitor
         void Visit(cFuncExprNode * node)
         {
             VisitAllNodes(node);
-            int size = 
-                node->GetFunc()->GetParams()->GetSize();
+            int size = 0;
+            if(node->GetFunc()->GetParams() != nullptr)
+                size = node->GetFunc()->GetParams()->GetSize();
 
             node->SetSize(size);
         }
@@ -166,7 +170,8 @@ class cMemory : public cVisitor
 
             m_funcOffset = -12;
 
-            Visit(node->GetParams());
+            if(node->GetParams() != nullptr)
+                Visit(node->GetParams());
 
             m_totalOffset = 0;
 
@@ -178,8 +183,9 @@ class cMemory : public cVisitor
         void Visit(cProcCallNode * node)
         {
             VisitAllNodes(node);
-            int size =
-                node->GetProc()->GetParams()->GetSize();
+            int size = 0;
+            if(node->GetProc()->GetParams() != nullptr)
+                size = node->GetProc()->GetParams()->GetSize();
 
             node->SetSize(size);
         }

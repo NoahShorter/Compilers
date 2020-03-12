@@ -15,13 +15,11 @@
 class cCodeGen : public cVisitor
 {
     private:
-        int m_labelCounter;
     public:
         //*********************************************************************
         cCodeGen(std::string filename) : cVisitor()
         {
             InitOutput(filename);
-            m_labelCounter = 0;
         }
         //*********************************************************************
         ~cCodeGen()
@@ -99,11 +97,15 @@ class cCodeGen : public cVisitor
                 EmitString("\nPLUS\n");
                 cExprListNode * indexes = node->GetIndexes();
                 vector<int> rowSizes = node->GetRowSizes();
+                vector<int> startIndexes = node->GetStartIndexes();
                 if(rowSizes[0] == 1)
                     ischar = true;
                 for(int ii = 0; ii < indexes->NumExpr(); ++ii)
                 {
                     indexes->GetExpr(ii)->Visit(this);
+                    EmitString("PUSH ");
+                    EmitInt(startIndexes[ii]);
+                    EmitString("\nMINUS\n");
                     EmitString("PUSH ");
                     EmitInt(rowSizes[ii]);
                     EmitString("\nTIMES\nPLUS\n");
@@ -118,7 +120,16 @@ class cCodeGen : public cVisitor
         virtual void Visit(cUnaryExprNode * node)
         {
             node->GetExpr()->Visit(this);
-            EmitString("NEG\n");
+            switch(node->GetOp())
+            {
+                case '-':
+                    EmitString("NEG");
+                    break;
+                case NOT:
+                    EmitString("NOT");
+                    break;
+            }
+            EmitString("\n");
         }
         //*********************************************************************
         virtual void Visit(cAssignNode * node)
@@ -143,11 +154,15 @@ class cCodeGen : public cVisitor
                 EmitString("\nPLUS\n");
                 cExprListNode * indexes = lval->GetIndexes();
                 vector<int> rowSizes = lval->GetRowSizes();
+                vector<int> startIndex = lval->GetStartIndexes();
                 if(rowSizes[0] == 1)
                     ischar = true;
                 for(int ii = 0; ii < indexes->NumExpr(); ++ii)
                 {
                     indexes->GetExpr(ii)->Visit(this);
+                    EmitString("PUSH ");
+                    EmitInt(startIndex[ii]);
+                    EmitString("\nMINUS\n");
                     EmitString("PUSH ");
                     EmitInt(rowSizes[ii]);
                     EmitString("\nTIMES\nPLUS\n");
@@ -209,7 +224,8 @@ class cCodeGen : public cVisitor
         {
             if(node->HasBlock())
             {
-                node->GetBlock()->GetDecls()->Visit(this);
+                if(node->GetBlock()->GetDecls() != nullptr)
+                    node->GetBlock()->GetDecls()->Visit(this);
                 EmitString(".function " + node->GetFuncName() + "\n");
                 EmitString(node->GetFuncName() + ":\n");
                 EmitString("ADJSP ");
@@ -227,7 +243,8 @@ class cCodeGen : public cVisitor
         {
             if(node->HasBlock())
             {
-                node->GetBlock()->GetDecls()->Visit(this);
+                if(node->GetBlock()->GetDecls() != nullptr)
+                    node->GetBlock()->GetDecls()->Visit(this);
                 EmitString(".function " + node->GetFuncName() + "\n");
                 EmitString(node->GetFuncName() + ":\n");
                 EmitString("ADJSP ");
@@ -268,41 +285,48 @@ class cCodeGen : public cVisitor
                 }
             }
             EmitString("CALL @" + node->GetName()->GetName() + "\n");
-            EmitString("POPARGS ");
-            EmitInt(node->GetSize());
-            EmitString("\n");
+            if(params != nullptr)
+            {
+                for(int ii = (params->NumExpr() - 1); ii >= 0; --ii)
+                {
+                    EmitString("POP\n");
+                }
+            }
+            //EmitString("POPARGS ");
+            //EmitInt(node->GetSize());
+            //EmitString("\n");
         }
         //*********************************************************************
         virtual void Visit(cIfNode * node)
         {
+            string ifLabel = GenerateLabel();
+            string elseLabel = GenerateLabel();
             node->GetCondition()->Visit(this);
-            EmitString("JUMPE @LABEL" + std::to_string(m_labelCounter) + "\n");
+            EmitString("JUMPE @" + elseLabel + "\n");
 
             node->GetIfStmt()->Visit(this);
 
-            EmitString("JUMP @LABEL" + std::to_string(m_labelCounter + 1) + "\n");
+            EmitString("JUMP @" + ifLabel + "\n");
 
-            EmitString("LABEL" + std::to_string(m_labelCounter) + ":\n");
+            EmitString(elseLabel + ":\n");
 
             if(node->GetElseStmt() != nullptr)
                 node->GetElseStmt()->Visit(this);
 
-            EmitString("LABEL" + std::to_string(m_labelCounter + 1) + ":\n");
-
-            m_labelCounter += 2;
+            EmitString(ifLabel + ":\n");
         }
         //*********************************************************************
         virtual void Visit(cWhileNode * node)
         {
-            EmitString("LABEL" + std::to_string(m_labelCounter + 1) + ":\n");
+            string loopLabel = GenerateLabel();
+            string doneLabel = GenerateLabel();
+            EmitString(loopLabel + ":\n");
             node->GetCondition()->Visit(this);
-            EmitString("JUMPE @LABEL" + std::to_string(m_labelCounter) + "\n");
+            EmitString("JUMPE @" + doneLabel + "\n");
 
             node->GetStmt()->Visit(this);
 
-            EmitString("JUMP @LABEL" + std::to_string(m_labelCounter + 1) + "\n");
-            EmitString("LABEL" + std::to_string(m_labelCounter) + ":\n");
-
-            m_labelCounter += 2;
+            EmitString("JUMP @" + loopLabel + "\n");
+            EmitString(doneLabel + ":\n");
         }
 };
